@@ -46,7 +46,7 @@ export function Header() {
           </Link>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/patient-history" title={t('header.addPatientHistory')}>
+          <Link href="/patient-history?action=add" title={t('header.addPatientHistory')}>
             <Button variant="ghost" size="icon">
               <UserPlus className="h-5 w-5" />
               <span className="sr-only">{t('header.addPatientHistory')}</span>

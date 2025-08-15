@@ -1,19 +1,24 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Header } from '@/components/app/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/context/language-context';
+import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 
-const formSchema = z.object({
+const patientSchema = z.object({
+  id: z.string().optional(),
   fullName: z.string().min(1, { message: 'Full name is required.' }),
   dateOfBirth: z.string().min(1, { message: 'Date of birth is required.' }),
   allergies: z.string().optional(),
@@ -22,16 +27,22 @@ const formSchema = z.object({
   previousSurgeries: z.string().optional(),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type PatientData = z.infer<typeof patientSchema>;
 
-export default function PatientHistoryPage() {
+function PatientHistoryContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { t } = useTranslation();
-  const [isMounted, setIsMounted] = useState(false);
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+  const [isMounted, setIsMounted] = useState(false);
+  const [patients, setPatients] = useState<PatientData[]>([]);
+  const [editingPatient, setEditingPatient] = useState<PatientData | null>(null);
+
+  const form = useForm<PatientData>({
+    resolver: zodResolver(patientSchema),
     defaultValues: {
+      id: '',
       fullName: '',
       dateOfBirth: '',
       allergies: '',
@@ -45,120 +56,208 @@ export default function PatientHistoryPage() {
     setIsMounted(true);
     const savedData = localStorage.getItem('patientHistory');
     if (savedData) {
-      form.reset(JSON.parse(savedData));
+      setPatients(JSON.parse(savedData));
     }
-  }, [form]);
+  }, []);
 
-  const onSubmit = (data: FormData) => {
-    localStorage.setItem('patientHistory', JSON.stringify(data));
+  useEffect(() => {
+    const action = searchParams.get('action');
+    const id = searchParams.get('id');
+    if (action === 'add') {
+      setEditingPatient({});
+      form.reset({
+        id: '',
+        fullName: '',
+        dateOfBirth: '',
+        allergies: '',
+        medications: '',
+        chronicConditions: '',
+        previousSurgeries: '',
+      });
+    } else if (action === 'edit' && id) {
+        const patientToEdit = patients.find(p => p.id === id);
+        if (patientToEdit) {
+            setEditingPatient(patientToEdit);
+            form.reset(patientToEdit);
+        }
+    } else {
+        setEditingPatient(null);
+    }
+  }, [searchParams, patients, form]);
+  
+
+  const savePatientsToLocalStorage = (updatedPatients: PatientData[]) => {
+    localStorage.setItem('patientHistory', JSON.stringify(updatedPatients));
+    setPatients(updatedPatients);
+  };
+
+  const onSubmit = (data: PatientData) => {
+    let updatedPatients;
+    if (editingPatient?.id) {
+        // Update existing patient
+        updatedPatients = patients.map(p => (p.id === editingPatient.id ? { ...data, id: p.id } : p));
+    } else {
+        // Add new patient
+        const newPatient = { ...data, id: new Date().toISOString() };
+        updatedPatients = [...patients, newPatient];
+    }
+    
+    savePatientsToLocalStorage(updatedPatients);
+    
     toast({
       title: t('patientHistory.saveSuccessTitle'),
       description: t('patientHistory.saveSuccessDescription'),
     });
+
+    setEditingPatient(null);
+    router.push('/patient-history');
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm(t('patientHistory.confirmDelete'))) {
+        const updatedPatients = patients.filter(p => p.id !== id);
+        savePatientsToLocalStorage(updatedPatients);
+        toast({
+            title: t('patientHistory.deleteSuccessTitle'),
+        });
+    }
   };
 
   if (!isMounted) {
     return null; // or a loading spinner
   }
 
+  if (editingPatient) {
+    return (
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="font-headline text-3xl">{editingPatient.id ? t('patientHistory.editTitle') : t('patientHistory.addTitle')}</CardTitle>
+          <CardDescription>{t('patientHistory.description')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField control={form.control} name="fullName" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('patientHistory.form.fullName')}</FormLabel>
+                    <FormControl><Input placeholder={t('patientHistory.form.fullNamePlaceholder')} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}/>
+                <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('patientHistory.form.dateOfBirth')}</FormLabel>
+                    <FormControl><Input type="date" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}/>
+              </div>
+              <FormField control={form.control} name="allergies" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('patientHistory.form.allergies')}</FormLabel>
+                  <FormControl><Textarea placeholder={t('patientHistory.form.allergiesPlaceholder')} {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}/>
+              <FormField control={form.control} name="medications" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('patientHistory.form.medications')}</FormLabel>
+                  <FormControl><Textarea placeholder={t('patientHistory.form.medicationsPlaceholder')} {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}/>
+              <FormField control={form.control} name="chronicConditions" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('patientHistory.form.chronicConditions')}</FormLabel>
+                  <FormControl><Textarea placeholder={t('patientHistory.form.chronicConditionsPlaceholder')} {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}/>
+              <FormField control={form.control} name="previousSurgeries" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('patientHistory.form.previousSurgeries')}</FormLabel>
+                  <FormControl><Textarea placeholder={t('patientHistory.form.previousSurgeriesPlaceholder')} {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}/>
+              <div className="flex gap-4">
+                  <Button type="button" variant="outline" onClick={() => { setEditingPatient(null); router.push('/patient-history'); }}>{t('patientHistory.form.cancelButton')}</Button>
+                  <Button type="submit" className="flex-grow">{t('patientHistory.form.saveButton')}</Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8">
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle className="font-headline text-3xl">{t('patientHistory.title')}</CardTitle>
-            <CardDescription>{t('patientHistory.description')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="fullName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('patientHistory.form.fullName')}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={t('patientHistory.form.fullNamePlaceholder')} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dateOfBirth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('patientHistory.form.dateOfBirth')}</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+    <Card className="max-w-6xl mx-auto">
+        <CardHeader>
+            <div className="flex justify-between items-center">
+                <div>
+                    <CardTitle className="font-headline text-3xl">{t('patientHistory.title')}</CardTitle>
+                    <CardDescription>{t('patientHistory.listDescription')}</CardDescription>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="allergies"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('patientHistory.form.allergies')}</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder={t('patientHistory.form.allergiesPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="medications"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('patientHistory.form.medications')}</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder={t('patientHistory.form.medicationsPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="chronicConditions"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('patientHistory.form.chronicConditions')}</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder={t('patientHistory.form.chronicConditionsPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="previousSurgeries"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('patientHistory.form.previousSurgeries')}</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder={t('patientHistory.form.previousSurgeriesPlaceholder')} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full">{t('patientHistory.form.saveButton')}</Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      </main>
-    </div>
+                <Button onClick={() => router.push('/patient-history?action=add')}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> {t('patientHistory.addPatientButton')}
+                </Button>
+            </div>
+        </CardHeader>
+        <CardContent>
+            <div className="border rounded-lg">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>{t('patientHistory.table.fullName')}</TableHead>
+                            <TableHead>{t('patientHistory.table.dateOfBirth')}</TableHead>
+                            <TableHead>{t('patientHistory.table.allergies')}</TableHead>
+                            <TableHead>{t('patientHistory.table.medications')}</TableHead>
+                            <TableHead className="text-right">{t('patientHistory.table.actions')}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {patients.length > 0 ? (
+                            patients.map((patient) => (
+                                <TableRow key={patient.id}>
+                                    <TableCell className="font-medium">{patient.fullName}</TableCell>
+                                    <TableCell>{patient.dateOfBirth}</TableCell>
+                                    <TableCell>{patient.allergies || '-'}</TableCell>
+                                    <TableCell>{patient.medications || '-'}</TableCell>
+                                    <TableCell className="text-right">
+                                        <Button variant="ghost" size="icon" onClick={() => router.push(`/patient-history?action=edit&id=${patient.id}`)}>
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(patient.id!)}>
+                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={5} className="text-center h-24">{t('patientHistory.noRecords')}</TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+        </CardContent>
+    </Card>
   );
+}
+
+
+export default function PatientHistoryPage() {
+    return (
+        <div className="flex flex-col min-h-screen bg-background">
+            <Header />
+            <main className="flex-1 container mx-auto p-4 sm:p-6 lg:p-8">
+                <Suspense fallback={<div>Loading...</div>}>
+                    <PatientHistoryContent />
+                </Suspense>
+            </main>
+        </div>
+    );
 }

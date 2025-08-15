@@ -3,7 +3,7 @@
   "header": {
     "title": "MedicAssist",
     "chooseLanguage": "Choisir la langue",
-    "addPatientHistory": "Ajouter/Modifier les antécédents du patient",
+    "addPatientHistory": "Ajouter un patient",
     "viewPatientHistory": "Voir les antécédents du patient"
   },
   "languages": {
@@ -61,9 +61,16 @@
   },
   "patientHistory": {
     "title": "Antécédents médicaux du patient",
+    "listDescription": "Consultez et gérez tous les dossiers de patients enregistrés.",
     "description": "Ces informations sont enregistrées localement sur votre appareil et ne sont pas partagées.",
+    "addTitle": "Ajouter un nouveau dossier patient",
+    "editTitle": "Modifier le dossier patient",
+    "addPatientButton": "Ajouter un nouveau patient",
+    "noRecords": "Aucun dossier patient trouvé.",
+    "confirmDelete": "Êtes-vous sûr(e) de vouloir supprimer ce dossier patient ?",
+    "deleteSuccessTitle": "Dossier supprimé",
     "saveSuccessTitle": "Antécédents enregistrés",
-    "saveSuccessDescription": "Vos antécédents médicaux ont été mis à jour avec succès.",
+    "saveSuccessDescription": "Les antécédents médicaux du patient ont été mis à jour avec succès.",
     "form": {
       "fullName": "Nom complet",
       "fullNamePlaceholder": "ex: Jeanne Dupont",
@@ -76,7 +83,15 @@
       "chronicConditionsPlaceholder": "ex: Diabète de type 2, Hypertension",
       "previousSurgeries": "Chirurgies antérieures",
       "previousSurgeriesPlaceholder": "ex: Appendicectomie (2015), Chirurgie du genou (2020)",
-      "saveButton": "Enregistrer les antécédents"
+      "saveButton": "Enregistrer les antécédents",
+      "cancelButton": "Annuler"
+    },
+    "table": {
+      "fullName": "Nom complet",
+      "dateOfBirth": "Date de naissance",
+      "allergies": "Allergies",
+      "medications": "Médicaments",
+      "actions": "Actions"
     }
   }
 }
