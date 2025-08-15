@@ -2,7 +2,8 @@
 {
   "header": {
     "title": "MedicAssist",
-    "chooseLanguage": "Choose language"
+    "chooseLanguage": "Choose language",
+    "patientHistory": "Patient History"
   },
   "languages": {
     "en": "English",
@@ -22,18 +23,20 @@
   },
   "symptomAnalyzer": {
     "title": "Symptom Analyzer",
-    "description": "Describe your symptoms below, and our AI will provide a preliminary analysis and first aid advice.",
+    "description": "Describe your symptoms and optionally upload a medical image. Our AI will provide a preliminary analysis and first aid advice.",
     "disclaimer": "This is not a substitute for professional medical advice.",
     "symptomsLabel": "Symptoms",
     "placeholder": "e.g., I have a sharp headache, fever, and a sore throat...",
     "analyzeButton": "Analyze Symptoms",
     "analyzing": "Analyzing...",
-    "analysisFailed": "Analysis Failed"
+    "analysisFailed": "Analysis Failed",
+    "uploadImage": "Upload Medical Image (Optional)"
   },
   "analysisResults": {
     "summaryTitle": "Analysis Summary",
     "possibleConditionsTitle": "Possible Conditions",
-    "confidence": "Confidence"
+    "confidence": "Confidence",
+    "imageAnalysisTitle": "Image Analysis"
   },
   "firstAid": {
     "title": "Immediate First Aid Advice"
@@ -50,5 +53,29 @@
   "footer": {
     "disclaimer": "MedicAssist is for informational purposes only and does not constitute medical advice, diagnosis, or treatment.",
     "copyright": "© {{year}} MedicAssist. All rights reserved."
+  },
+  "audio": {
+    "readAloud": "Read Aloud",
+    "generationFailed": "Audio Generation Failed"
+  },
+  "patientHistory": {
+    "title": "Patient Medical History",
+    "description": "This information is saved locally on your device and is not shared.",
+    "saveSuccessTitle": "History Saved",
+    "saveSuccessDescription": "Your medical history has been successfully updated.",
+    "form": {
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "e.g., Jane Doe",
+      "dateOfBirth": "Date of Birth",
+      "allergies": "Allergies",
+      "allergiesPlaceholder": "e.g., Penicillin, Peanuts",
+      "medications": "Current Medications",
+      "medicationsPlaceholder": "e.g., Metformin 500mg, Lisinopril 10mg",
+      "chronicConditions": "Chronic Conditions",
+      "chronicConditionsPlaceholder": "e.g., Type 2 Diabetes, Hypertension",
+      "previousSurgeries": "Previous Surgeries",
+      "previousSurgeriesPlaceholder": "e.g., Appendectomy (2015), Knee surgery (2020)",
+      "saveButton": "Save History"
+    }
   }
 }

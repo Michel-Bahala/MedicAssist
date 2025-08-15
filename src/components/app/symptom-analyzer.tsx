@@ -16,16 +16,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnalysisResults } from '@/components/app/analysis-results';
 import { FirstAidAdvice } from '@/components/app/first-aid-advice';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Image as ImageIcon, X } from 'lucide-react';
+import { Input } from '../ui/input';
+import Image from 'next/image';
 
 const formSchema = z.object({
   symptoms: z.string().min(10, { message: 'Please describe your symptoms in at least 10 characters.' }),
+  image: z.any().optional(),
 });
 
 
 export function SymptomAnalyzer() {
   const [analysisResult, setAnalysisResult] = useState<MedicalAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -36,11 +40,30 @@ export function SymptomAnalyzer() {
     },
   });
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+        form.setValue('image', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  const removeImage = () => {
+    setImagePreview(null);
+    form.setValue('image', null);
+    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+    if(fileInput) fileInput.value = '';
+  }
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    const result = await getMedicalAnalysis(values.symptoms);
+    const result = await getMedicalAnalysis(values.symptoms, values.image);
 
     if (result.error) {
       toast({
@@ -85,6 +108,39 @@ export function SymptomAnalyzer() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="image"
+                render={() => (
+                  <FormItem>
+                    <FormLabel htmlFor="image-upload" className="font-medium flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-primary">
+                      <ImageIcon className="h-5 w-5" />
+                      {t('symptomAnalyzer.uploadImage')}
+                    </FormLabel>
+                    <FormControl>
+                       <Input id="image-upload" type="file" className="sr-only" onChange={handleImageChange} accept="image/*" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+               />
+
+              {imagePreview && (
+                <div className="relative w-48 h-48 border rounded-md overflow-hidden">
+                  <Image src={imagePreview} alt="Image preview" layout="fill" objectFit="cover" />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-1 right-1 h-7 w-7"
+                    onClick={removeImage}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
               <Button type="submit" disabled={isLoading} className="w-full bg-accent hover:bg-accent/90">
                 {isLoading ? t('symptomAnalyzer.analyzing') : <> <Sparkles className="mr-2 h-4 w-4" /> {t('symptomAnalyzer.analyzeButton')} </>}
               </Button>

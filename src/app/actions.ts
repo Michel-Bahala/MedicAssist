@@ -8,6 +8,8 @@ import {
   getFirstAidAdvice,
   FirstAidAdviceOutput,
 } from '@/ai/flows/first-aid-advice';
+import { generateAudio, GenerateAudioInput } from '@/ai/flows/text-to-speech';
+
 
 export type MedicalAnalysis = {
   analysis: AnalyzeSymptomsOutput;
@@ -15,10 +17,11 @@ export type MedicalAnalysis = {
 };
 
 export async function getMedicalAnalysis(
-  symptoms: string
+  symptoms: string,
+  imageDataUri?: string | null
 ): Promise<{ data?: MedicalAnalysis; error?: string }> {
   try {
-    const analysis = await analyzeSymptoms({ symptoms });
+    const analysis = await analyzeSymptoms({ symptoms, photoDataUri: imageDataUri });
     if (
       !analysis ||
       !analysis.possibleConditions ||
@@ -34,12 +37,27 @@ export async function getMedicalAnalysis(
       .map((c) => c.condition)
       .join(', ');
       
-    // The original symptoms string should be passed here.
     const advice = await getFirstAidAdvice({ symptoms: symptoms, suggestedConditions });
 
     return { data: { analysis, advice } };
   } catch (e) {
     console.error(e);
     return { error: 'An unexpected error occurred. Please try again later.' };
+  }
+}
+
+export async function getAudioForText(
+  text: string
+): Promise<{ data?: string; error?: string }> {
+  try {
+    const input: GenerateAudioInput = { textToSpeak: text };
+    const result = await generateAudio(input);
+    if (!result || !result.audioDataUri) {
+      return { error: 'Failed to generate audio.' };
+    }
+    return { data: result.audioDataUri };
+  } catch (e) {
+    console.error(e);
+    return { error: 'An unexpected error occurred while generating audio.' };
   }
 }

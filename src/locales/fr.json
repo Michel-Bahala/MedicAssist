@@ -2,7 +2,8 @@
 {
   "header": {
     "title": "MedicAssist",
-    "chooseLanguage": "Choisir la langue"
+    "chooseLanguage": "Choisir la langue",
+    "patientHistory": "Antécédents du patient"
   },
   "languages": {
     "en": "English",
@@ -22,18 +23,20 @@
   },
   "symptomAnalyzer": {
     "title": "Analyseur de symptômes",
-    "description": "Décrivez vos symptômes ci-dessous, et notre IA vous fournira une analyse préliminaire et des conseils de premiers secours.",
+    "description": "Décrivez vos symptômes et téléchargez éventuellement une image médicale. Notre IA fournira une analyse préliminaire et des conseils de premiers secours.",
     "disclaimer": "Ceci ne remplace pas un avis médical professionnel.",
     "symptomsLabel": "Symptômes",
     "placeholder": "ex: J'ai un mal de tête aigu, de la fièvre, et un mal de gorge...",
     "analyzeButton": "Analyser les symptômes",
     "analyzing": "Analyse en cours...",
-    "analysisFailed": "L'analyse a échoué"
+    "analysisFailed": "L'analyse a échoué",
+    "uploadImage": "Télécharger une image médicale (facultatif)"
   },
   "analysisResults": {
     "summaryTitle": "Résumé de l'analyse",
     "possibleConditionsTitle": "Conditions possibles",
-    "confidence": "Confiance"
+    "confidence": "Confiance",
+    "imageAnalysisTitle": "Analyse d'image"
   },
   "firstAid": {
     "title": "Conseils de premiers secours immédiats"
@@ -50,5 +53,29 @@
   "footer": {
     "disclaimer": "MedicAssist est à titre informatif uniquement et ne constitue pas un avis, un diagnostic ou un traitement médical.",
     "copyright": "© {{year}} MedicAssist. Tous droits réservés."
+  },
+  "audio": {
+    "readAloud": "Lire à voix haute",
+    "generationFailed": "La génération audio a échoué"
+  },
+  "patientHistory": {
+    "title": "Antécédents médicaux du patient",
+    "description": "Ces informations sont enregistrées localement sur votre appareil et ne sont pas partagées.",
+    "saveSuccessTitle": "Antécédents enregistrés",
+    "saveSuccessDescription": "Vos antécédents médicaux ont été mis à jour avec succès.",
+    "form": {
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "ex: Jeanne Dupont",
+      "dateOfBirth": "Date de naissance",
+      "allergies": "Allergies",
+      "allergiesPlaceholder": "ex: Pénicilline, Arachides",
+      "medications": "Médicaments actuels",
+      "medicationsPlaceholder": "ex: Metformine 500mg, Lisinopril 10mg",
+      "chronicConditions": "Maladies chroniques",
+      "chronicConditionsPlaceholder": "ex: Diabète de type 2, Hypertension",
+      "previousSurgeries": "Chirurgies antérieures",
+      "previousSurgeriesPlaceholder": "ex: Appendicectomie (2015), Chirurgie du genou (2020)",
+      "saveButton": "Enregistrer les antécédents"
+    }
   }
 }

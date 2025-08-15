@@ -19,6 +19,13 @@ const AnalyzeSymptomsInputSchema = z.object({
     .describe(
       'A detailed description of the patient’s symptoms, including onset, duration, severity, and any relevant medical history.'
     ),
+  photoDataUri: z
+    .string()
+    .optional()
+    .nullable()
+    .describe(
+      "An optional photo of a relevant medical image (e.g., rash, mole, injury), as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    ),
 });
 export type AnalyzeSymptomsInput = z.infer<typeof AnalyzeSymptomsInputSchema>;
 
@@ -32,7 +39,7 @@ const PossibleConditionSchema = z.object({
   explanation: z
     .string()
     .describe(
-      'A brief explanation of why the condition is suspected based on the symptoms provided.'
+      'A brief explanation of why the condition is suspected based on the symptoms and/or image provided.'
     ),
 });
 
@@ -45,8 +52,9 @@ const AnalyzeSymptomsOutputSchema = z.object({
   summary: z
     .string()
     .describe(
-      'A summary of the analysis, including the most likely conditions and key symptoms leading to the diagnosis.'
+      'A summary of the analysis, including the most likely conditions and key symptoms/visuals leading to the diagnosis.'
     ),
+  imageAnalysis: z.string().optional().describe('A detailed analysis of the provided image, if any.')
 });
 export type AnalyzeSymptomsOutput = z.infer<typeof AnalyzeSymptomsOutputSchema>;
 
@@ -58,13 +66,16 @@ const prompt = ai.definePrompt({
   name: 'analyzeSymptomsPrompt',
   input: {schema: AnalyzeSymptomsInputSchema},
   output: {schema: AnalyzeSymptomsOutputSchema},
-  prompt: `You are an AI-powered medical assistant specializing in symptom analysis.
+  prompt: `You are an AI-powered medical assistant specializing in symptom and medical image analysis.
 
-  Given the following symptoms, provide a prioritized list of possible medical conditions with associated confidence scores and explanations. Also provide a summary of the analysis.
+  Given the following symptoms and optional medical image, provide a prioritized list of possible medical conditions with associated confidence scores and explanations. Also provide a summary of the analysis. If an image is provided, include a specific analysis of the image in the 'imageAnalysis' field.
 
   Symptoms: {{{symptoms}}}
+  {{#if photoDataUri}}
+  Medical Image: {{media url=photoDataUri}}
+  {{/if}}
 
-  Format the output as a JSON object.
+  Format the output as a JSON object. Be very cautious and always recommend consulting a doctor. Do not provide a definitive diagnosis.
   `,
 });
 
