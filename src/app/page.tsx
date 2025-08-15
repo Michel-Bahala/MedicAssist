@@ -1,8 +1,14 @@
+// @/app/page.tsx
+"use client";
 import { Header } from '@/components/app/header';
 import { SymptomAnalyzer } from '@/components/app/symptom-analyzer';
 import { NearbyLocations } from '@/components/app/nearby-locations';
+import { useTranslation } from '@/context/language-context';
+
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -17,8 +23,8 @@ export default function Home() {
         </div>
       </main>
       <footer className="text-center p-4 text-xs text-muted-foreground">
-        <p>MedicAssist is for informational purposes only and does not constitute medical advice, diagnosis, or treatment.</p>
-        <p>&copy; {new Date().getFullYear()} MedicAssist. All rights reserved.</p>
+        <p>{t('footer.disclaimer')}</p>
+        <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
       </footer>
     </div>
   );

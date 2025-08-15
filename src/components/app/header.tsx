@@ -2,11 +2,11 @@
 "use client";
 
 import type { FC } from 'react';
-import { useState } from 'react';
 import { EmergencyButton } from '@/components/app/emergency-button';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Languages } from 'lucide-react';
+import { useTranslation } from '@/context/language-context';
 
 const StethoscopeIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
@@ -31,7 +31,7 @@ const StethoscopeIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export function Header() {
-  const [language, setLanguage] = useState('en');
+  const { setLanguage, t } = useTranslation();
 
   return (
     <header className="py-4 px-4 sm:px-6 lg:px-8 bg-card shadow-md">
@@ -39,7 +39,7 @@ export function Header() {
         <div className="flex items-center gap-3">
           <StethoscopeIcon className="h-8 w-8 text-primary" />
           <h1 className="font-headline text-3xl md:text-4xl font-bold text-primary">
-            MedicAssist
+            {t('header.title')}
           </h1>
         </div>
         <div className="flex items-center gap-2">
@@ -47,15 +47,15 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
                 <Languages className="h-5 w-5" />
-                <span className="sr-only">Choose language</span>
+                <span className="sr-only">{t('header.chooseLanguage')}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => setLanguage('en')}>
-                English
+                {t('languages.en')}
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setLanguage('fr')}>
-                Français
+                {t('languages.fr')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

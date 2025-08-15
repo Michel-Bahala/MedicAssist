@@ -1,12 +1,14 @@
 import type { FirstAidAdviceOutput } from '@/ai/flows/first-aid-advice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LifeBuoy } from 'lucide-react';
+import { useTranslation } from '@/context/language-context';
 
 interface FirstAidAdviceProps {
   advice: FirstAidAdviceOutput;
 }
 
 export function FirstAidAdvice({ advice }: FirstAidAdviceProps) {
+  const { t } = useTranslation();
   const adviceList = advice.advice
     .split('\n')
     .map(item => item.trim().replace(/^\d+\.\s*/, ''))
@@ -17,7 +19,7 @@ export function FirstAidAdvice({ advice }: FirstAidAdviceProps) {
       <CardHeader>
         <CardTitle className="font-headline text-2xl flex items-center gap-3">
           <LifeBuoy className="h-7 w-7 text-primary" />
-          Immediate First Aid Advice
+          {t('firstAid.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>

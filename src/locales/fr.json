@@ -1,0 +1,54 @@
+
+{
+  "header": {
+    "title": "MedicAssist",
+    "chooseLanguage": "Choisir la langue"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français"
+  },
+  "emergency": {
+    "button": "URGENCE",
+    "title": "Êtes-vous sûr(e) qu'il s'agit d'une urgence ?",
+    "description": "Cette action tentera d'appeler les services d'urgence. Ne continuez que si vous êtes dans une situation d'urgence réelle. Votre position actuelle est affichée ci-dessous pour la communiquer à l'opérateur.",
+    "yourLocation": "Votre position",
+    "gettingLocation": "Obtention de votre position...",
+    "locationError": "Erreur lors de l'obtention de la position : {{message}}",
+    "geolocationNotSupported": "La géolocalisation n'est pas prise en charge par ce navigateur.",
+    "latLon": "Lat: {{lat}}, Lon: {{lon}}",
+    "cancel": "Annuler",
+    "callNow": "Appeler maintenant"
+  },
+  "symptomAnalyzer": {
+    "title": "Analyseur de symptômes",
+    "description": "Décrivez vos symptômes ci-dessous, et notre IA vous fournira une analyse préliminaire et des conseils de premiers secours.",
+    "disclaimer": "Ceci ne remplace pas un avis médical professionnel.",
+    "symptomsLabel": "Symptômes",
+    "placeholder": "ex: J'ai un mal de tête aigu, de la fièvre, et un mal de gorge...",
+    "analyzeButton": "Analyser les symptômes",
+    "analyzing": "Analyse en cours...",
+    "analysisFailed": "L'analyse a échoué"
+  },
+  "analysisResults": {
+    "summaryTitle": "Résumé de l'analyse",
+    "possibleConditionsTitle": "Conditions possibles",
+    "confidence": "Confiance"
+  },
+  "firstAid": {
+    "title": "Conseils de premiers secours immédiats"
+  },
+  "nearbyLocations": {
+    "title": "Établissements médicaux à proximité",
+    "note": "Note : Les données de localisation sont à des fins de démonstration uniquement. Une clé API Google Maps est requise pour une fonctionnalité complète.",
+    "yourLocation": "Votre position",
+    "types": {
+      "hospital": "Hôpital",
+      "pharmacy": "Pharmacie"
+    }
+  },
+  "footer": {
+    "disclaimer": "MedicAssist est à titre informatif uniquement et ne constitue pas un avis, un diagnostic ou un traitement médical.",
+    "copyright": "© {{year}} MedicAssist. Tous droits réservés."
+  }
+}

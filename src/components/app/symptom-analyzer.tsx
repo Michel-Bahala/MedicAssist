@@ -1,3 +1,4 @@
+// @/components/app/symptom-analyzer.tsx
 "use client";
 
 import { useState } from 'react';
@@ -6,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { getMedicalAnalysis, type MedicalAnalysis } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/context/language-context';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,6 +27,7 @@ export function SymptomAnalyzer() {
   const [analysisResult, setAnalysisResult] = useState<MedicalAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,7 +45,7 @@ export function SymptomAnalyzer() {
     if (result.error) {
       toast({
         variant: "destructive",
-        title: "Analysis Failed",
+        title: t('symptomAnalyzer.analysisFailed'),
         description: result.error,
       });
     } else if (result.data) {
@@ -56,10 +59,10 @@ export function SymptomAnalyzer() {
     <div className="w-full space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Symptom Analyzer</CardTitle>
+          <CardTitle className="font-headline text-2xl">{t('symptomAnalyzer.title')}</CardTitle>
           <CardDescription>
-            Describe your symptoms below, and our AI will provide a preliminary analysis and first aid advice. 
-            <span className="font-bold block mt-1">This is not a substitute for professional medical advice.</span>
+            {t('symptomAnalyzer.description')}
+            <span className="font-bold block mt-1">{t('symptomAnalyzer.disclaimer')}</span>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -70,10 +73,10 @@ export function SymptomAnalyzer() {
                 name="symptoms"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="sr-only">Symptoms</FormLabel>
+                    <FormLabel className="sr-only">{t('symptomAnalyzer.symptomsLabel')}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g., I have a sharp headache, fever, and a sore throat..."
+                        placeholder={t('symptomAnalyzer.placeholder')}
                         className="min-h-[150px] text-base"
                         {...field}
                       />
@@ -83,7 +86,7 @@ export function SymptomAnalyzer() {
                 )}
               />
               <Button type="submit" disabled={isLoading} className="w-full bg-accent hover:bg-accent/90">
-                {isLoading ? 'Analyzing...' : <> <Sparkles className="mr-2 h-4 w-4" /> Analyze Symptoms </>}
+                {isLoading ? t('symptomAnalyzer.analyzing') : <> <Sparkles className="mr-2 h-4 w-4" /> {t('symptomAnalyzer.analyzeButton')} </>}
               </Button>
             </form>
           </Form>
