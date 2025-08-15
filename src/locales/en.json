@@ -48,12 +48,16 @@
   },
   "nearbyLocations": {
     "title": "Nearby Medical Facilities",
-    "note": "Note: Location data is for demonstration purposes only. A Google Maps API key is required for full functionality.",
     "yourLocation": "Your Location",
     "types": {
       "hospital": "Hospital",
       "pharmacy": "Pharmacy"
-    }
+    },
+    "apiKeyMissing": "Google Maps API Key is not configured. Please add it to your environment variables.",
+    "locationError": "Could not access your location. Please enable location services in your browser settings.",
+    "geolocationNotSupported": "Geolocation is not supported by this browser.",
+    "fetchErrorTitle": "Could not fetch nearby places",
+    "noResults": "No medical facilities found nearby."
   },
   "footer": {
     "disclaimer": "MedicAssist is for informational purposes only and does not constitute medical advice, diagnosis, or treatment.",
@@ -105,5 +109,3 @@
     }
   }
 }
-
-    
