@@ -33,7 +33,9 @@ export async function getMedicalAnalysis(
     const suggestedConditions = analysis.possibleConditions
       .map((c) => c.condition)
       .join(', ');
-    const advice = await getFirstAidAdvice({ symptoms, suggestedConditions });
+      
+    // The original symptoms string should be passed here.
+    const advice = await getFirstAidAdvice({ symptoms: symptoms, suggestedConditions });
 
     return { data: { analysis, advice } };
   } catch (e) {
