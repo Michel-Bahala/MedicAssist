@@ -48,7 +48,11 @@ function PatientHistoryContent() {
 
   const [isMounted, setIsMounted] = useState(false);
   const [patients, setPatients] = useState<PatientData[]>([]);
-  const [editingPatient, setEditingPatient] = useState<PatientData | null>(null);
+  
+  const action = useMemo(() => searchParams.get('action'), [searchParams]);
+  const patientId = useMemo(() => searchParams.get('id'), [searchParams]);
+  const showForm = useMemo(() => action === 'add' || action === 'edit', [action]);
+
 
   const form = useForm<PatientData>({
     resolver: zodResolver(patientSchema),
@@ -68,13 +72,9 @@ function PatientHistoryContent() {
     setIsMounted(true);
     try {
       const savedData = localStorage.getItem('patientHistory');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        if (Array.isArray(parsedData)) {
-          setPatients(parsedData);
-        } else {
-          setPatients([]);
-        }
+      const parsedData = savedData ? JSON.parse(savedData) : [];
+      if (Array.isArray(parsedData)) {
+        setPatients(parsedData);
       } else {
         setPatients([]);
       }
@@ -83,13 +83,9 @@ function PatientHistoryContent() {
       setPatients([]);
     }
   }, []);
-
-  const action = useMemo(() => searchParams.get('action'), [searchParams]);
-  const patientId = useMemo(() => searchParams.get('id'), [searchParams]);
-
+  
   useEffect(() => {
     if (action === 'add') {
-      setEditingPatient({});
       form.reset({
         id: '',
         fullName: '',
@@ -103,13 +99,13 @@ function PatientHistoryContent() {
     } else if (action === 'edit' && patientId) {
         const patientToEdit = patients.find(p => p.id === patientId);
         if (patientToEdit) {
-            setEditingPatient(patientToEdit);
             form.reset(patientToEdit);
+        } else {
+            // If patient not found, redirect to the list view
+            router.push('/patient-history');
         }
-    } else {
-        setEditingPatient(null);
     }
-  }, [action, patientId, patients, form]);
+  }, [action, patientId, patients, form, router]);
   
 
   const savePatientsToLocalStorage = (updatedPatients: PatientData[]) => {
@@ -119,8 +115,9 @@ function PatientHistoryContent() {
 
   const onSubmit = (data: PatientData) => {
     let updatedPatients;
-    if (editingPatient?.id) {
-        updatedPatients = patients.map(p => (p.id === editingPatient.id ? { ...data, id: p.id, analyses: p.analyses || [] } : p));
+    if (action === 'edit' && patientId) {
+        const existingPatient = patients.find(p => p.id === patientId);
+        updatedPatients = patients.map(p => (p.id === patientId ? { ...data, id: p.id, analyses: existingPatient?.analyses || [] } : p));
     } else {
         const newPatient = { ...data, id: new Date().toISOString(), analyses: [] };
         updatedPatients = [...patients, newPatient];
@@ -133,7 +130,6 @@ function PatientHistoryContent() {
       description: t('patientHistory.saveSuccessDescription'),
     });
 
-    setEditingPatient(null);
     router.push('/patient-history');
   };
 
@@ -148,14 +144,14 @@ function PatientHistoryContent() {
   };
 
   if (!isMounted) {
-    return null;
+    return null; // or a loading spinner
   }
 
-  if (editingPatient) {
+  if (showForm) {
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">{editingPatient.id ? t('patientHistory.editTitle') : t('patientHistory.addTitle')}</CardTitle>
+          <CardTitle className="font-headline text-3xl">{action === 'edit' ? t('patientHistory.editTitle') : t('patientHistory.addTitle')}</CardTitle>
           <CardDescription>{t('patientHistory.description')}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -206,7 +202,7 @@ function PatientHistoryContent() {
                 </FormItem>
               )}/>
               <div className="flex gap-4">
-                  <Button type="button" variant="outline" onClick={() => { setEditingPatient(null); router.push('/patient-history'); }}>{t('patientHistory.form.cancelButton')}</Button>
+                  <Button type="button" variant="outline" onClick={() => router.push('/patient-history')}>{t('patientHistory.form.cancelButton')}</Button>
                   <Button type="submit" className="flex-grow">{t('patientHistory.form.saveButton')}</Button>
               </div>
             </form>
@@ -324,5 +320,3 @@ export default function PatientHistoryPage() {
         </div>
     );
 }
-
-    
