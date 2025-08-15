@@ -54,9 +54,22 @@ function PatientHistoryContent() {
 
   useEffect(() => {
     setIsMounted(true);
-    const savedData = localStorage.getItem('patientHistory');
-    if (savedData) {
-      setPatients(JSON.parse(savedData));
+    try {
+      const savedData = localStorage.getItem('patientHistory');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        // Ensure the parsed data is an array
+        if (Array.isArray(parsedData)) {
+          setPatients(parsedData);
+        } else {
+          setPatients([]);
+        }
+      } else {
+        setPatients([]);
+      }
+    } catch (error) {
+      console.error("Failed to parse patient history from localStorage", error);
+      setPatients([]);
     }
   }, []);
 
