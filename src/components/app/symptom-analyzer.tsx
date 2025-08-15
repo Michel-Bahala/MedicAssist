@@ -1,8 +1,7 @@
-
 // @/components/app/symptom-analyzer.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,7 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnalysisResults } from '@/components/app/analysis-results';
 import { FirstAidAdvice } from '@/components/app/first-aid-advice';
-import { Sparkles, Image as ImageIcon, X, User } from 'lucide-react';
+import { Sparkles, Image as ImageIcon, X, User, Mic } from 'lucide-react';
 import { Input } from '../ui/input';
 import Image from 'next/image';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -39,8 +38,13 @@ export function SymptomAnalyzer() {
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [isListening, setIsListening] = useState(false);
+  
   const { toast } = useToast();
   const { t, language } = useTranslation();
+  
+  const recognitionRef = useRef<any>(null);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,6 +53,38 @@ export function SymptomAnalyzer() {
       patientId: "",
     },
   });
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = language;
+
+        recognition.onresult = (event) => {
+          const transcript = Array.from(event.results)
+            .map((result) => result[0])
+            .map((result) => result.transcript)
+            .join('');
+          form.setValue('symptoms', form.getValues('symptoms') + transcript);
+        };
+        
+        recognition.onend = () => {
+            setIsListening(false);
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error', event.error);
+            setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, [language, form]);
+
 
   useEffect(() => {
     try {
@@ -61,6 +97,16 @@ export function SymptomAnalyzer() {
       setPatients([]);
     }
   }, []);
+
+  const handleListen = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current?.start();
+      setIsListening(true);
+    }
+  };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -177,13 +223,24 @@ export function SymptomAnalyzer() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="sr-only">{t('symptomAnalyzer.symptomsLabel')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t('symptomAnalyzer.placeholder')}
-                        className="min-h-[150px] text-base"
-                        {...field}
-                      />
-                    </FormControl>
+                    <div className="relative">
+                      <FormControl>
+                        <Textarea
+                          placeholder={t('symptomAnalyzer.placeholder')}
+                          className="min-h-[150px] text-base pr-12"
+                          {...field}
+                        />
+                      </FormControl>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="icon" 
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 ${isListening ? 'text-destructive' : ''}`}
+                        onClick={handleListen}
+                      >
+                        <Mic className="h-5 w-5" />
+                      </Button>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -270,5 +327,3 @@ function LoadingSkeleton() {
         </div>
     )
 }
-
-    
