@@ -65,9 +65,14 @@ export function Combobox({
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.label} // Use label for filtering, which is cmkd's default behavior
-                  onSelect={() => {
-                    onChange(option.value === value ? "" : option.value)
+                  value={option.label}
+                  onSelect={(currentValue) => {
+                    // cmkd's onSelect gives the 'value' prop of the selected CommandItem, which is the label.
+                    // We find the corresponding option to get its actual value (the id).
+                    const selectedOption = options.find(opt => opt.label.toLowerCase() === currentValue.toLowerCase());
+                    if (selectedOption) {
+                        onChange(selectedOption.value === value ? "" : selectedOption.value)
+                    }
                     setOpen(false)
                   }}
                 >
