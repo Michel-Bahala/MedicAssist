@@ -85,8 +85,6 @@ function PatientHistoryContent() {
   }, []);
   
   useEffect(() => {
-    // This effect now correctly handles resetting the form or loading patient data
-    // based on the URL parameters.
     if (showForm) {
       if (action === 'add') {
         form.reset({
@@ -104,7 +102,6 @@ function PatientHistoryContent() {
           if (patientToEdit) {
               form.reset(patientToEdit);
           } else {
-              // If patient not found, go back to the list view.
               router.push('/patient-history');
           }
       }
