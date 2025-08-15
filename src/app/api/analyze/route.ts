@@ -1,17 +1,16 @@
 
-'use server';
-
+// /src/app/api/analyze/route.ts
 import {
   analyzeSymptoms,
-  AnalyzeSymptomsOutput,
   AnalyzeSymptomsInput,
+  AnalyzeSymptomsOutput,
 } from '@/ai/flows/analyze-symptoms';
 import {
   getFirstAidAdvice,
-  FirstAidAdviceOutput,
   FirstAidAdviceInput,
+  FirstAidAdviceOutput,
 } from '@/ai/flows/first-aid-advice';
-import { generateAudio, GenerateAudioInput } from '@/ai/flows/text-to-speech';
+import { NextRequest, NextResponse } from 'next/server';
 
 
 export type MedicalAnalysis = {
@@ -33,13 +32,16 @@ async function sendAnalysisByEmail(email: string, analysis: MedicalAnalysis) {
   return Promise.resolve();
 }
 
-export async function getMedicalAnalysis(
-  symptoms: string,
-  language: 'en' | 'fr' | 'es' | 'de',
-  imageDataUri?: string | null,
-  patientEmail?: string | null,
-): Promise<{ data?: MedicalAnalysis; error?: string }> {
+
+export async function POST(req: NextRequest) {
   try {
+    const body = await req.json();
+    const { symptoms, language, imageDataUri, patientEmail } = body;
+
+    if (!symptoms || !language) {
+      return NextResponse.json({ error: 'Missing required fields: symptoms, language' }, { status: 400 });
+    }
+
     const analysisInput: AnalyzeSymptomsInput = { 
       symptoms, 
       photoDataUri: imageDataUri,
@@ -51,10 +53,9 @@ export async function getMedicalAnalysis(
       !analysis.possibleConditions ||
       analysis.possibleConditions.length === 0
     ) {
-      return {
-        error:
-          'Could not analyze symptoms. The model returned an empty result. Please try rephrasing.',
-      };
+      return NextResponse.json({
+        error: 'Could not analyze symptoms. The model returned an empty result. Please try rephrasing.',
+      }, { status: 500 });
     }
 
     const suggestedConditions = analysis.possibleConditions
@@ -73,28 +74,11 @@ export async function getMedicalAnalysis(
     if (patientEmail) {
       await sendAnalysisByEmail(patientEmail, medicalAnalysis);
     }
-
-    return { data: medicalAnalysis };
-  } catch (e) {
-    console.error(e);
-    return { error: 'An unexpected error occurred. Please try again later.' };
-  }
-}
-
-export async function getAudioForText(
-  text: string
-): Promise<{ data?: string; error?: string }> {
-  try {
-    const input: GenerateAudioInput = { textToSpeak: text };
-    const result = await generateAudio(input);
-    if (!result || !result.audioDataUri) {
-      return { error: 'Failed to generate audio.' };
-    }
-    return { data: result.audioDataUri };
-  } catch (e) {
-    console.error(e);
-    return { error: 'An unexpected error occurred while generating audio.' };
-  }
-}
-
     
+    return NextResponse.json(medicalAnalysis);
+  } catch (e) {
+    console.error(e);
+    const errorMessage = e instanceof Error ? e.message : 'An unexpected error occurred.';
+    return NextResponse.json({ error: `An unexpected error occurred. Please try again later. Details: ${errorMessage}` }, { status: 500 });
+  }
+}

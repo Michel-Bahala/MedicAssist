@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { getMedicalAnalysis, type MedicalAnalysis } from '@/app/actions';
+import type { MedicalAnalysis } from '@/app/api/analyze/route';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/context/language-context';
 
@@ -187,36 +187,52 @@ export function SymptomAnalyzer() {
         patientToUpdate = patients.find(p => p.fullName.toLowerCase() === values.patientName?.toLowerCase());
     }
 
-    const result = await getMedicalAnalysis(values.symptoms, language, values.image, patientToUpdate?.email);
-
-    if (result.error) {
-      toast({
-        variant: "destructive",
-        title: t('symptomAnalyzer.analysisFailed'),
-        description: result.error,
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          symptoms: values.symptoms,
+          language: language,
+          imageDataUri: values.image,
+          patientEmail: patientToUpdate?.email,
+        }),
       });
-    } else if (result.data) {
-      setAnalysisResult(result.data);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Analysis failed');
+      }
+
+      const resultData = await response.json();
+      setAnalysisResult(resultData);
 
       if (values.patientName) {
         if (patientToUpdate) {
-            saveAnalysisToPatient(patientToUpdate.id, values.symptoms, result.data);
+            saveAnalysisToPatient(patientToUpdate.id, values.symptoms, resultData);
             toast({
               title: t('symptomAnalyzer.saveSuccessTitle'),
               description: t('symptomAnalyzer.saveSuccessDescription'),
             });
         } else {
             // Patient does not exist, create a new one
-            const newPatient = addNewPatientAndSaveAnalysis(values.patientName, values.symptoms, result.data);
+            const newPatient = addNewPatientAndSaveAnalysis(values.patientName, values.symptoms, resultData);
             toast({
               title: t('patientHistory.newPatientCreatedTitle'),
               description: t('patientHistory.newPatientCreatedDescription', { name: newPatient.fullName }),
             });
         }
       }
+
+    } catch (error: any) {
+       toast({
+        variant: "destructive",
+        title: t('symptomAnalyzer.analysisFailed'),
+        description: error.message,
+      });
+    } finally {
+        setIsLoading(false);
     }
-    
-    setIsLoading(false);
   }
 
   const handlePatientNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -400,5 +416,3 @@ function LoadingSkeleton() {
         </div>
     )
 }
-
-    

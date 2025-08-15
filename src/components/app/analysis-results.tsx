@@ -1,3 +1,4 @@
+
 import type { AnalyzeSymptomsOutput } from '@/ai/flows/analyze-symptoms';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -5,7 +6,6 @@ import { useTranslation } from '@/context/language-context';
 import { Button } from '../ui/button';
 import { Volume2, LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
-import { getAudioForText } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
 interface AnalysisResultsProps {
@@ -26,21 +26,32 @@ const AudioPlayer = ({ textToSpeak }: { textToSpeak: string }) => {
         }
 
         setIsLoading(true);
-        const result = await getAudioForText(textToSpeak);
-        setIsLoading(false);
+        try {
+            const response = await fetch('/api/tts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ textToSpeak }),
+            });
 
-        if (result.error || !result.data) {
-            toast({
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to generate audio');
+            }
+
+            const result = await response.json();
+            setAudioSrc(result.audioDataUri);
+            const audio = new Audio(result.audioDataUri);
+            audio.play();
+
+        } catch (error: any) {
+             toast({
                 variant: 'destructive',
                 title: t('audio.generationFailed'),
-                description: result.error,
+                description: error.message,
             });
-            return;
+        } finally {
+            setIsLoading(false);
         }
-
-        setAudioSrc(result.data);
-        const audio = new Audio(result.data);
-        audio.play();
     };
 
     return (
