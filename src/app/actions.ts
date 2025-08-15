@@ -19,10 +19,25 @@ export type MedicalAnalysis = {
   advice: FirstAidAdviceOutput;
 };
 
+// This is a placeholder for a real email sending service
+async function sendAnalysisByEmail(email: string, analysis: MedicalAnalysis) {
+  console.log(`\n--- Pretend Email Sent ---`);
+  console.log(`To: ${email}`);
+  console.log(`Subject: Your MedicAssist Analysis Results`);
+  console.log(`\nHi,\n\nHere are your recent analysis results:\n`);
+  console.log(`Summary: ${analysis.analysis.summary}`);
+  console.log(`\nFirst Aid Advice:\n${analysis.advice.advice}`);
+  console.log(`\nDisclaimer: This is not a substitute for professional medical advice.`);
+  console.log(`--- End of Pretend Email ---\n`);
+  // In a real application, you would integrate a service like SendGrid, Resend, or Mailgun here.
+  return Promise.resolve();
+}
+
 export async function getMedicalAnalysis(
   symptoms: string,
   language: 'en' | 'fr' | 'es' | 'de',
-  imageDataUri?: string | null
+  imageDataUri?: string | null,
+  patientEmail?: string | null,
 ): Promise<{ data?: MedicalAnalysis; error?: string }> {
   try {
     const analysisInput: AnalyzeSymptomsInput = { 
@@ -53,7 +68,13 @@ export async function getMedicalAnalysis(
     };
     const advice = await getFirstAidAdvice(adviceInput);
 
-    return { data: { analysis, advice } };
+    const medicalAnalysis = { analysis, advice };
+
+    if (patientEmail) {
+      await sendAnalysisByEmail(patientEmail, medicalAnalysis);
+    }
+
+    return { data: medicalAnalysis };
   } catch (e) {
     console.error(e);
     return { error: 'An unexpected error occurred. Please try again later.' };
@@ -75,3 +96,5 @@ export async function getAudioForText(
     return { error: 'An unexpected error occurred while generating audio.' };
   }
 }
+
+    

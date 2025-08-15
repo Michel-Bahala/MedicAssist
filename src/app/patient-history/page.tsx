@@ -29,6 +29,7 @@ const analysisSchema = z.object({
 const patientSchema = z.object({
   id: z.string().optional(),
   fullName: z.string().min(1, { message: 'Full name is required.' }),
+  email: z.string().email({ message: 'Invalid email address.' }).optional().or(z.literal('')),
   dateOfBirth: z.string().optional(),
   allergies: z.string().optional(),
   medications: z.string().optional(),
@@ -60,6 +61,7 @@ function PatientHistoryContent() {
     defaultValues: {
       id: '',
       fullName: '',
+      email: '',
       dateOfBirth: '',
       allergies: '',
       medications: '',
@@ -91,6 +93,7 @@ function PatientHistoryContent() {
         form.reset({
           id: '',
           fullName: '',
+          email: '',
           dateOfBirth: '',
           allergies: '',
           medications: '',
@@ -172,6 +175,13 @@ function PatientHistoryContent() {
                     <FormMessage />
                   </FormItem>
                 )}/>
+                 <FormField control={form.control} name="email" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('patientHistory.form.email')}</FormLabel>
+                    <FormControl><Input type="email" placeholder={t('patientHistory.form.emailPlaceholder')} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}/>
                 <FormField control={form.control} name="dateOfBirth" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('patientHistory.form.dateOfBirth')}</FormLabel>
@@ -248,10 +258,9 @@ function PatientHistoryContent() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>{t('patientHistory.table.fullName')}</TableHead>
+                            <TableHead>{t('patientHistory.table.email')}</TableHead>
                             <TableHead>{t('patientHistory.table.dateOfBirth')}</TableHead>
-                            <TableHead>{t('patientHistory.table.allergies')}</TableHead>
-                            <TableHead>{t('patientHistory.table.medications')}</TableHead>
-                             <TableHead>{t('patientHistory.table.analysesCount')}</TableHead>
+                            <TableHead>{t('patientHistory.table.analysesCount')}</TableHead>
                             <TableHead className="text-right">{t('patientHistory.table.actions')}</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -261,9 +270,8 @@ function PatientHistoryContent() {
                               <React.Fragment key={patient.id}>
                                 <TableRow>
                                     <TableCell className="font-medium">{patient.fullName}</TableCell>
+                                    <TableCell>{patient.email || '-'}</TableCell>
                                     <TableCell>{patient.dateOfBirth || '-'}</TableCell>
-                                    <TableCell>{patient.allergies || '-'}</TableCell>
-                                    <TableCell>{patient.medications || '-'}</TableCell>
                                     <TableCell>{patient.analyses?.length || 0}</TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="ghost" size="icon" onClick={() => router.push(`/patient-history?action=edit&id=${patient.id}`)}>
@@ -337,5 +345,7 @@ export default function PatientHistoryPage() {
         </div>
     );
 }
+
+    
 
     

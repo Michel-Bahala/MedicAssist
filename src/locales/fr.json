@@ -8,7 +8,9 @@
   },
   "languages": {
     "en": "English",
-    "fr": "Français"
+    "fr": "Français",
+    "es": "Español",
+    "de": "Deutsch"
   },
   "emergency": {
     "button": "URGENCE",
@@ -67,6 +69,8 @@
     "saveSuccessTitle": "Antécédents enregistrés",
     "saveSuccessDescription": "Les antécédents médicaux du patient ont été mis à jour avec succès.",
     "searchPlaceholder": "Rechercher un patient par son nom...",
+    "newPatientCreatedTitle": "Patient créé et analyse enregistrée",
+    "newPatientCreatedDescription": "Le nouveau patient \"{{name}}\" a été créé et l'analyse a été enregistrée.",
     "analysisHistory": {
       "title": "Voir l'historique des analyses",
       "date": "Date de l'analyse",
@@ -75,6 +79,8 @@
     "form": {
       "fullName": "Nom complet",
       "fullNamePlaceholder": "ex: Jeanne Dupont",
+      "email": "Adresse e-mail",
+      "emailPlaceholder": "ex: jeanne.dupont@example.com",
       "dateOfBirth": "Date de naissance",
       "allergies": "Allergies",
       "allergiesPlaceholder": "ex: Pénicilline, Arachides",
@@ -89,6 +95,7 @@
     },
     "table": {
       "fullName": "Nom complet",
+      "email": "E-mail",
       "dateOfBirth": "Date de naissance",
       "allergies": "Allergies",
       "medications": "Médicaments",
@@ -97,3 +104,5 @@
     }
   }
 }
+
+    

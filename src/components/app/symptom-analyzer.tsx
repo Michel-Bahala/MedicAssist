@@ -1,3 +1,4 @@
+
 // @/components/app/symptom-analyzer.tsx
 "use client";
 
@@ -29,6 +30,7 @@ const formSchema = z.object({
 type Patient = {
   id: string;
   fullName: string;
+  email?: string;
   analyses?: any[];
 }
 
@@ -172,7 +174,7 @@ export function SymptomAnalyzer() {
     const updatedPatients = [...patients, newPatient];
     localStorage.setItem('patientHistory', JSON.stringify(updatedPatients));
     setPatients(updatedPatients);
-    return newPatient.id;
+    return newPatient;
   };
 
 
@@ -180,7 +182,12 @@ export function SymptomAnalyzer() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    const result = await getMedicalAnalysis(values.symptoms, language, values.image);
+    let patientToUpdate: Patient | undefined | null = null;
+    if (values.patientName) {
+        patientToUpdate = patients.find(p => p.fullName.toLowerCase() === values.patientName?.toLowerCase());
+    }
+
+    const result = await getMedicalAnalysis(values.symptoms, language, values.image, patientToUpdate?.email);
 
     if (result.error) {
       toast({
@@ -192,8 +199,6 @@ export function SymptomAnalyzer() {
       setAnalysisResult(result.data);
 
       if (values.patientName) {
-        let patientToUpdate = patients.find(p => p.fullName.toLowerCase() === values.patientName?.toLowerCase());
-        
         if (patientToUpdate) {
             saveAnalysisToPatient(patientToUpdate.id, values.symptoms, result.data);
             toast({
@@ -202,10 +207,10 @@ export function SymptomAnalyzer() {
             });
         } else {
             // Patient does not exist, create a new one
-            const newPatientId = addNewPatientAndSaveAnalysis(values.patientName, values.symptoms, result.data);
+            const newPatient = addNewPatientAndSaveAnalysis(values.patientName, values.symptoms, result.data);
             toast({
-              title: "Patient créé et analyse enregistrée",
-              description: `Le nouveau patient "${values.patientName}" a été créé et l'analyse a été sauvegardée.`,
+              title: t('patientHistory.newPatientCreatedTitle'),
+              description: t('patientHistory.newPatientCreatedDescription', { name: newPatient.fullName }),
             });
         }
       }
@@ -395,3 +400,5 @@ function LoadingSkeleton() {
         </div>
     )
 }
+
+    

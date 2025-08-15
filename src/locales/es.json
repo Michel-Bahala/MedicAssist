@@ -69,6 +69,8 @@
     "saveSuccessTitle": "Historial Guardado",
     "saveSuccessDescription": "El historial médico del paciente se ha actualizado correctamente.",
     "searchPlaceholder": "Buscar un paciente por nombre...",
+    "newPatientCreatedTitle": "Paciente Creado y Análisis Guardado",
+    "newPatientCreatedDescription": "El nuevo paciente \"{{name}}\" ha sido creado y el análisis ha sido guardado.",
     "analysisHistory": {
       "title": "Ver Historial de Análisis",
       "date": "Fecha del Análisis",
@@ -77,6 +79,8 @@
     "form": {
       "fullName": "Nombre Completo",
       "fullNamePlaceholder": "p.ej., María García",
+      "email": "Correo Electrónico",
+      "emailPlaceholder": "p.ej., maria.garcia@example.com",
       "dateOfBirth": "Fecha de Nacimiento",
       "allergies": "Alergias",
       "allergiesPlaceholder": "p.ej., Penicilina, Cacahuetes",
@@ -91,6 +95,7 @@
     },
     "table": {
       "fullName": "Nombre Completo",
+      "email": "Correo Electrónico",
       "dateOfBirth": "Fecha de Nacimiento",
       "allergies": "Alergias",
       "medications": "Medicamentos",
@@ -99,3 +104,5 @@
     }
   }
 }
+
+    

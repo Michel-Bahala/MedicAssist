@@ -69,6 +69,8 @@
     "saveSuccessTitle": "Verlauf gespeichert",
     "saveSuccessDescription": "Die Patientenakte wurde erfolgreich aktualisiert.",
     "searchPlaceholder": "Suchen Sie einen Patienten nach Namen...",
+    "newPatientCreatedTitle": "Patient erstellt & Analyse gespeichert",
+    "newPatientCreatedDescription": "Neuer Patient \"{{name}}\" wurde erstellt und die Analyse wurde gespeichert.",
     "analysisHistory": {
       "title": "Analyse-Verlauf anzeigen",
       "date": "Analyse-Datum",
@@ -77,6 +79,8 @@
     "form": {
       "fullName": "Vollständiger Name",
       "fullNamePlaceholder": "z.B. Erika Mustermann",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "z.B. erika.mustermann@example.com",
       "dateOfBirth": "Geburtsdatum",
       "allergies": "Allergien",
       "allergiesPlaceholder": "z.B. Penicillin, Erdnüsse",
@@ -91,6 +95,7 @@
     },
     "table": {
       "fullName": "Vollständiger Name",
+      "email": "E-Mail",
       "dateOfBirth": "Geburtsdatum",
       "allergies": "Allergien",
       "medications": "Medikamente",
@@ -99,3 +104,5 @@
     }
   }
 }
+
+    
