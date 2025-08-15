@@ -19,7 +19,7 @@ import { FirstAidAdvice } from '@/components/app/first-aid-advice';
 import { Sparkles, Image as ImageIcon, X, User, Mic } from 'lucide-react';
 import { Input } from '../ui/input';
 import Image from 'next/image';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Combobox } from '@/components/ui/combobox';
 
 const formSchema = z.object({
   symptoms: z.string().min(10, { message: 'Please describe your symptoms in at least 10 characters.' }),
@@ -174,6 +174,8 @@ export function SymptomAnalyzer() {
     setIsLoading(false);
   }
 
+  const patientOptions = patients.map(p => ({ value: p.id, label: p.fullName }));
+
   return (
     <div className="w-full space-y-8">
       <Card>
@@ -192,25 +194,21 @@ export function SymptomAnalyzer() {
                   control={form.control}
                   name="patientId"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel className="flex items-center gap-2 font-medium">
                         <User className="h-5 w-5" />
                         {t('symptomAnalyzer.selectPatient')}
                       </FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder={t('symptomAnalyzer.selectPatientPlaceholder')} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {patients.map((patient) => (
-                            <SelectItem key={patient.id} value={patient.id}>
-                              {patient.fullName}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                       <FormControl>
+                          <Combobox
+                            options={patientOptions}
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
+                            placeholder={t('symptomAnalyzer.selectPatientPlaceholder')}
+                            searchPlaceholder={t('patientHistory.searchPlaceholder')}
+                            notFoundMessage={t('patientHistory.noRecords')}
+                          />
+                       </FormControl>
                        <FormMessage />
                     </FormItem>
                   )}
