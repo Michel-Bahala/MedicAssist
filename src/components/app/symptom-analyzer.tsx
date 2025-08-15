@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { analyzeSymptoms, AnalyzeSymptomsOutput } from '@/ai/flows/analyze-symptoms';
-import { getFirstAidAdvice, FirstAidAdviceOutput } from '@/ai/flows/first-aid-advice';
+import { getMedicalAnalysis, type MedicalAnalysis } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 
 import { Button } from '@/components/ui/button';
@@ -21,28 +20,6 @@ const formSchema = z.object({
   symptoms: z.string().min(10, { message: 'Please describe your symptoms in at least 10 characters.' }),
 });
 
-type MedicalAnalysis = {
-    analysis: AnalyzeSymptomsOutput;
-    advice: FirstAidAdviceOutput;
-}
-
-async function getMedicalAnalysis(symptoms: string): Promise<{ data?: MedicalAnalysis; error?: string }> {
-  "use server";
-  try {
-    const analysis = await analyzeSymptoms({ symptoms });
-    if (!analysis || !analysis.possibleConditions || analysis.possibleConditions.length === 0) {
-      return { error: 'Could not analyze symptoms. The model returned an empty result. Please try rephrasing.' };
-    }
-
-    const suggestedConditions = analysis.possibleConditions.map(c => c.condition).join(', ');
-    const advice = await getFirstAidAdvice({ symptoms, suggestedConditions });
-
-    return { data: { analysis, advice } };
-  } catch (e) {
-    console.error(e);
-    return { error: 'An unexpected error occurred. Please try again later.' };
-  }
-}
 
 export function SymptomAnalyzer() {
   const [analysisResult, setAnalysisResult] = useState<MedicalAnalysis | null>(null);
