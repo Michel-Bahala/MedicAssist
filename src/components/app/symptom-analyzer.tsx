@@ -19,12 +19,11 @@ import { FirstAidAdvice } from '@/components/app/first-aid-advice';
 import { Sparkles, Image as ImageIcon, X, User, Mic } from 'lucide-react';
 import { Input } from '../ui/input';
 import Image from 'next/image';
-import { Combobox } from '@/components/ui/combobox';
 
 const formSchema = z.object({
   symptoms: z.string().min(10, { message: 'Please describe your symptoms in at least 10 characters.' }),
   image: z.any().optional(),
-  patientId: z.string().optional(),
+  patientName: z.string().optional(),
 });
 
 type Patient = {
@@ -50,7 +49,7 @@ export function SymptomAnalyzer() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       symptoms: "",
-      patientId: "",
+      patientName: "",
     },
   });
   
@@ -162,19 +161,21 @@ export function SymptomAnalyzer() {
       });
     } else if (result.data) {
       setAnalysisResult(result.data);
-      if (values.patientId) {
-        saveAnalysisToPatient(values.patientId, values.symptoms, result.data);
-        toast({
-          title: t('symptomAnalyzer.saveSuccessTitle'),
-          description: t('symptomAnalyzer.saveSuccessDescription'),
-        });
+
+      if (values.patientName) {
+        const patientToUpdate = patients.find(p => p.fullName.toLowerCase() === values.patientName?.toLowerCase());
+        if (patientToUpdate) {
+            saveAnalysisToPatient(patientToUpdate.id, values.symptoms, result.data);
+            toast({
+              title: t('symptomAnalyzer.saveSuccessTitle'),
+              description: t('symptomAnalyzer.saveSuccessDescription'),
+            });
+        }
       }
     }
     
     setIsLoading(false);
   }
-
-  const patientOptions = patients.map(p => ({ value: p.id, label: p.fullName }));
 
   return (
     <div className="w-full space-y-8">
@@ -192,22 +193,15 @@ export function SymptomAnalyzer() {
                {patients.length > 0 && (
                 <FormField
                   control={form.control}
-                  name="patientId"
+                  name="patientName"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem>
                       <FormLabel className="flex items-center gap-2 font-medium">
                         <User className="h-5 w-5" />
                         {t('symptomAnalyzer.selectPatient')}
                       </FormLabel>
                        <FormControl>
-                          <Combobox
-                            options={patientOptions}
-                            value={field.value ?? ''}
-                            onChange={field.onChange}
-                            placeholder={t('symptomAnalyzer.selectPatientPlaceholder')}
-                            searchPlaceholder={t('patientHistory.searchPlaceholder')}
-                            notFoundMessage={t('patientHistory.noRecords')}
-                          />
+                          <Input placeholder={t('patientHistory.form.fullNamePlaceholder')} {...field} />
                        </FormControl>
                        <FormMessage />
                     </FormItem>
