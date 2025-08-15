@@ -28,7 +28,7 @@ const StethoscopeIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
     <path d="M6 20v-4" />
     <path d="M12 4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4" />
     <path d="M14 10V8" />
-    <path d="M14 12v8a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4a2 2 S 18 8 16 8h-2a2 2 0 0 0-2 2Z" />
+    <path d="M14 12v8a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2Z" />
   </svg>
 );
 
