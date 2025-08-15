@@ -52,10 +52,11 @@ function PatientHistoryContent() {
   const [patients, setPatients] = useState<PatientData[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   
+  // Use useMemo to stabilize the values from searchParams
   const action = useMemo(() => searchParams.get('action'), [searchParams]);
   const patientId = useMemo(() => searchParams.get('id'), [searchParams]);
-  const showForm = useMemo(() => action === 'add' || action === 'edit', [action]);
 
+  const showForm = action === 'add' || action === 'edit';
 
   const form = useForm<PatientData>({
     resolver: zodResolver(patientSchema),
@@ -72,9 +73,8 @@ function PatientHistoryContent() {
     },
   });
 
+  // Load data from localStorage on mount
   useEffect(() => {
-    // This effect runs only on the client, after the component has mounted.
-    // This is the correct place to access localStorage.
     setIsMounted(true);
     try {
       const savedData = localStorage.getItem('patientHistory');
@@ -95,16 +95,18 @@ function PatientHistoryContent() {
     }
   }, [toast]);
   
+  // Effect to reset form when action or patientId changes
   useEffect(() => {
-    if (showForm && patients.length > 0) {
-      if (action === 'edit' && patientId) {
-          const patientToEdit = patients.find(p => p.id === patientId);
-          if (patientToEdit) {
-              form.reset(patientToEdit);
-          } else {
-              router.push('/patient-history');
-          }
-      }
+    if (!isMounted) return;
+
+    if (action === 'edit' && patientId) {
+        const patientToEdit = patients.find(p => p.id === patientId);
+        if (patientToEdit) {
+            form.reset(patientToEdit);
+        } else {
+            // If patient not found, redirect to the list view
+            router.push('/patient-history');
+        }
     } else if (action === 'add') {
       form.reset({
         id: '',
@@ -118,7 +120,7 @@ function PatientHistoryContent() {
         analyses: [],
       });
     }
-  }, [action, patientId, patients, form, router, showForm]);
+  }, [action, patientId, patients, form, router, isMounted]);
   
 
   const savePatientsToLocalStorage = (updatedPatients: PatientData[]) => {
@@ -169,9 +171,7 @@ function PatientHistoryContent() {
     patient.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
   if (!isMounted) {
-    // Show a loading state until the component is mounted and data is loaded
     return (
       <div className="flex justify-center items-center p-8">
         <p>Loading Patient History...</p>
@@ -383,3 +383,5 @@ export default function PatientHistoryPage() {
         </div>
     );
 }
+
+    
