@@ -57,7 +57,13 @@ export function Combobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-        <Command>
+        <Command filter={(value, search) => {
+            const option = options.find(o => o.value === value);
+            if (option) {
+              return option.label.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+            }
+            return 0;
+          }}>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{notFoundMessage}</CommandEmpty>
@@ -65,7 +71,7 @@ export function Combobox({
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.value} // Use value for filtering and selection
+                  value={option.value} // Keep value for selection logic
                   onSelect={(currentValue) => {
                     onChange(currentValue === value ? "" : currentValue)
                     setOpen(false)
