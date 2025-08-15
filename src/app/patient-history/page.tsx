@@ -278,12 +278,12 @@ function PatientHistoryContent() {
                                   <TableRow>
                                       <TableCell colSpan={6}>
                                           <Accordion type="single" collapsible className="w-full">
-                                              <AccordionItem value="item-1">
+                                              <AccordionItem value={`history-${patient.id}`}>
                                                   <AccordionTrigger>{t('patientHistory.analysisHistory.title')}</AccordionTrigger>
                                                   <AccordionContent>
-                                                      <div className="space-y-4 p-4">
+                                                      <div className="space-y-4 p-4 bg-muted/20">
                                                           {patient.analyses.map((record: AnalysisRecord, index) => (
-                                                              <Card key={index} className="bg-muted/50">
+                                                              <Card key={index} className="bg-card">
                                                                   <CardHeader>
                                                                       <CardTitle className="text-lg">{t('patientHistory.analysisHistory.date')}: {new Date(record.analysisDate).toLocaleString()}</CardTitle>
                                                                       <CardDescription>{t('patientHistory.analysisHistory.symptoms')}: {record.symptoms}</CardDescription>
@@ -337,3 +337,5 @@ export default function PatientHistoryPage() {
         </div>
     );
 }
+
+    
