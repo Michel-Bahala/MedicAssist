@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -64,15 +65,9 @@ export function Combobox({
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.label} // Compare with label for filtering
+                  value={option.value} // Use value for filtering and selection
                   onSelect={(currentValue) => {
-                    // Find the option that matches the selected label
-                    const selectedOption = options.find(
-                        (opt) => opt.label.toLowerCase() === currentValue.toLowerCase()
-                    );
-                    if (selectedOption) {
-                        onChange(selectedOption.value === value ? "" : selectedOption.value)
-                    }
+                    onChange(currentValue === value ? "" : currentValue)
                     setOpen(false)
                   }}
                 >
