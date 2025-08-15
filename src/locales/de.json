@@ -1,0 +1,101 @@
+
+{
+  "header": {
+    "title": "MedicAssist",
+    "chooseLanguage": "Sprache wählen",
+    "addPatientHistory": "Patient hinzufügen",
+    "viewPatientHistory": "Patientenakte einsehen"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "de": "Deutsch"
+  },
+  "emergency": {
+    "button": "NOTFALL",
+    "title": "Sind Sie sicher, dass dies ein Notfall ist?",
+    "description": "Dadurch wird versucht, die Notdienste anzurufen. Fahren Sie nur fort, wenn Sie sich in einer echten Notfallsituation befinden. Ihr aktueller Standort wird unten angezeigt, um ihn mit dem Operator zu teilen.",
+    "yourLocation": "Ihr Standort",
+    "gettingLocation": "Standort wird abgerufen...",
+    "locationError": "Fehler beim Abrufen des Standorts: {{message}}",
+    "geolocationNotSupported": "Die Geolokalisierung wird von diesem Browser nicht unterstützt.",
+    "latLon": "Lat: {{lat}}, Lon: {{lon}}",
+    "cancel": "Abbrechen",
+    "callNow": "Jetzt anrufen"
+  },
+  "symptomAnalyzer": {
+    "title": "Symptom-Analysator",
+    "description": "Beschreiben Sie Ihre Symptome und laden Sie optional ein medizinisches Bild hoch. Unsere KI wird eine vorläufige Analyse und Erste-Hilfe-Ratschläge geben.",
+    "disclaimer": "Dies ist kein Ersatz für professionelle medizinische Beratung.",
+    "symptomsLabel": "Symptome",
+    "placeholder": "z.B. Ich habe starke Kopfschmerzen, Fieber und Halsschmerzen...",
+    "analyzeButton": "Symptome analysieren",
+    "analyzing": "Analysiere...",
+    "analysisFailed": "Analyse fehlgeschlagen",
+    "uploadImage": "Medizinisches Bild hochladen (optional)",
+    "selectPatient": "Analyse für einen bestehenden Patienten durchführen (optional)",
+    "selectPatientPlaceholder": "Wählen Sie einen Patienten aus, um die Analyseergebnisse zu speichern",
+    "saveSuccessTitle": "Analyse gespeichert",
+    "saveSuccessDescription": "Die Analyseergebnisse wurden in der Patientenakte gespeichert."
+  },
+  "analysisResults": {
+    "summaryTitle": "Zusammenfassung der Analyse",
+    "possibleConditionsTitle": "Mögliche Zustände",
+    "confidence": "Konfidenz",
+    "imageAnalysisTitle": "Bildanalyse"
+  },
+  "firstAid": {
+    "title": "Sofortige Erste-Hilfe-Ratschläge"
+  },
+  "footer": {
+    "disclaimer": "MedicAssist dient nur zu Informationszwecken und stellt keine medizinische Beratung, Diagnose oder Behandlung dar.",
+    "copyright": "© {{year}} MedicAssist. Alle Rechte vorbehalten."
+  },
+  "audio": {
+    "readAloud": "Laut vorlesen",
+    "generationFailed": "Audio-Generierung fehlgeschlagen"
+  },
+  "patientHistory": {
+    "title": "Patientenakte",
+    "listDescription": "Alle gespeicherten Patientenakten anzeigen und verwalten.",
+    "description": "Diese Informationen werden lokal auf Ihrem Gerät gespeichert und nicht geteilt.",
+    "addTitle": "Neuen Patientendatensatz hinzufügen",
+    "editTitle": "Patientendatensatz bearbeiten",
+    "addPatientButton": "Neuen Patienten hinzufügen",
+    "noRecords": "Keine Patientendaten gefunden.",
+    "confirmDelete": "Sind Sie sicher, dass Sie diesen Patientendatensatz löschen möchten?",
+    "deleteSuccessTitle": "Datensatz gelöscht",
+    "saveSuccessTitle": "Verlauf gespeichert",
+    "saveSuccessDescription": "Die Patientenakte wurde erfolgreich aktualisiert.",
+    "searchPlaceholder": "Suchen Sie einen Patienten nach Namen...",
+    "analysisHistory": {
+      "title": "Analyse-Verlauf anzeigen",
+      "date": "Analyse-Datum",
+      "symptoms": "Gemeldete Symptome"
+    },
+    "form": {
+      "fullName": "Vollständiger Name",
+      "fullNamePlaceholder": "z.B. Erika Mustermann",
+      "dateOfBirth": "Geburtsdatum",
+      "allergies": "Allergien",
+      "allergiesPlaceholder": "z.B. Penicillin, Erdnüsse",
+      "medications": "Aktuelle Medikamente",
+      "medicationsPlaceholder": "z.B. Metformin 500mg, Lisinopril 10mg",
+      "chronicConditions": "Chronische Erkrankungen",
+      "chronicConditionsPlaceholder": "z.B. Typ-2-Diabetes, Bluthochdruck",
+      "previousSurgeries": "Frühere Operationen",
+      "previousSurgeriesPlaceholder": "z.B. Appendektomie (2015), Knie-OP (2020)",
+      "saveButton": "Verlauf speichern",
+      "cancelButton": "Abbrechen"
+    },
+    "table": {
+      "fullName": "Vollständiger Name",
+      "dateOfBirth": "Geburtsdatum",
+      "allergies": "Allergien",
+      "medications": "Medikamente",
+      "analysesCount": "Analysen",
+      "actions": "Aktionen"
+    }
+  }
+}

@@ -4,10 +4,12 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import en from '@/locales/en.json';
 import fr from '@/locales/fr.json';
+import es from '@/locales/es.json';
+import de from '@/locales/de.json';
 
-type Language = 'en' | 'fr';
+type Language = 'en' | 'fr' | 'es' | 'de';
 
-const translations = { en, fr };
+const translations = { en, fr, es, de };
 
 interface LanguageContextType {
   language: Language;

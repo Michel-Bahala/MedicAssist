@@ -17,7 +17,7 @@ const FirstAidAdviceInputSchema = z.object({
     .string()
     .describe('A detailed description of the symptoms experienced by the user.'),
   suggestedConditions: z.string().describe('List of suggested conditions based on symptoms.'),
-  language: z.enum(['en', 'fr']).describe('The language for the output.'),
+  language: z.enum(['en', 'fr', 'es', 'de']).describe('The language for the output.'),
 });
 export type FirstAidAdviceInput = z.infer<typeof FirstAidAdviceInputSchema>;
 

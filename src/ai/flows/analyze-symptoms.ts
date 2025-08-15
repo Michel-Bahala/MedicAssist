@@ -25,7 +25,7 @@ const AnalyzeSymptomsInputSchema = z.object({
     .describe(
       "An optional photo of a relevant medical image (e.g., rash, mole, injury), as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  language: z.enum(['en', 'fr']).describe('The language for the output.'),
+  language: z.enum(['en', 'fr', 'es', 'de']).describe('The language for the output.'),
 });
 export type AnalyzeSymptomsInput = z.infer<typeof AnalyzeSymptomsInputSchema>;
 

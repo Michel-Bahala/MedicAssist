@@ -1,0 +1,101 @@
+
+{
+  "header": {
+    "title": "MedicAssist",
+    "chooseLanguage": "Elegir idioma",
+    "addPatientHistory": "Añadir Paciente",
+    "viewPatientHistory": "Ver Historial del Paciente"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français",
+    "es": "Español",
+    "de": "Deutsch"
+  },
+  "emergency": {
+    "button": "EMERGENCIA",
+    "title": "¿Está seguro de que es una emergencia?",
+    "description": "Esto intentará llamar a los servicios de emergencia. Proceda solo si se encuentra en una situación de emergencia genuina. Su ubicación actual se muestra a continuación para compartirla con el operador.",
+    "yourLocation": "Su Ubicación",
+    "gettingLocation": "Obteniendo su ubicación...",
+    "locationError": "Error al obtener la ubicación: {{message}}",
+    "geolocationNotSupported": "La geolocalización no es compatible con este navegador.",
+    "latLon": "Lat: {{lat}}, Lon: {{lon}}",
+    "cancel": "Cancelar",
+    "callNow": "Llamar Ahora"
+  },
+  "symptomAnalyzer": {
+    "title": "Analizador de Síntomas",
+    "description": "Describa sus síntomas y opcionalmente cargue una imagen médica. Nuestra IA proporcionará un análisis preliminar y consejos de primeros auxilios.",
+    "disclaimer": "Esto no sustituye el consejo médico profesional.",
+    "symptomsLabel": "Síntomas",
+    "placeholder": "p.ej., Tengo un fuerte dolor de cabeza, fiebre y dolor de garganta...",
+    "analyzeButton": "Analizar Síntomas",
+    "analyzing": "Analizando...",
+    "analysisFailed": "Análisis Fallido",
+    "uploadImage": "Cargar Imagen Médica (Opcional)",
+    "selectPatient": "Realizar análisis para un paciente existente (Opcional)",
+    "selectPatientPlaceholder": "Seleccione un paciente para guardar los resultados del análisis",
+    "saveSuccessTitle": "Análisis Guardado",
+    "saveSuccessDescription": "Los resultados del análisis se han guardado en el historial del paciente."
+  },
+  "analysisResults": {
+    "summaryTitle": "Resumen del Análisis",
+    "possibleConditionsTitle": "Posibles Condiciones",
+    "confidence": "Confianza",
+    "imageAnalysisTitle": "Análisis de Imagen"
+  },
+  "firstAid": {
+    "title": "Consejos de Primeros Auxilios Inmediatos"
+  },
+  "footer": {
+    "disclaimer": "MedicAssist es solo para fines informativos y no constituye consejo, diagnóstico o tratamiento médico.",
+    "copyright": "© {{year}} MedicAssist. Todos los derechos reservados."
+  },
+  "audio": {
+    "readAloud": "Leer en voz alta",
+    "generationFailed": "Falló la generación de audio"
+  },
+  "patientHistory": {
+    "title": "Historial Médico del Paciente",
+    "listDescription": "Ver y gestionar todos los registros de pacientes guardados.",
+    "description": "Esta información se guarda localmente en su dispositivo y no se comparte.",
+    "addTitle": "Añadir Nuevo Registro de Paciente",
+    "editTitle": "Editar Registro de Paciente",
+    "addPatientButton": "Añadir Nuevo Paciente",
+    "noRecords": "No se encontraron registros de pacientes.",
+    "confirmDelete": "¿Está seguro de que desea eliminar este registro de paciente?",
+    "deleteSuccessTitle": "Registro Eliminado",
+    "saveSuccessTitle": "Historial Guardado",
+    "saveSuccessDescription": "El historial médico del paciente se ha actualizado correctamente.",
+    "searchPlaceholder": "Buscar un paciente por nombre...",
+    "analysisHistory": {
+      "title": "Ver Historial de Análisis",
+      "date": "Fecha del Análisis",
+      "symptoms": "Síntomas Reportados"
+    },
+    "form": {
+      "fullName": "Nombre Completo",
+      "fullNamePlaceholder": "p.ej., María García",
+      "dateOfBirth": "Fecha de Nacimiento",
+      "allergies": "Alergias",
+      "allergiesPlaceholder": "p.ej., Penicilina, Cacahuetes",
+      "medications": "Medicamentos Actuales",
+      "medicationsPlaceholder": "p.ej., Metformina 500mg, Lisinopril 10mg",
+      "chronicConditions": "Condiciones Crónicas",
+      "chronicConditionsPlaceholder": "p.ej., Diabetes Tipo 2, Hipertensión",
+      "previousSurgeries": "Cirugías Anteriores",
+      "previousSurgeriesPlaceholder": "p.ej., Apendicectomía (2015), Cirugía de rodilla (2020)",
+      "saveButton": "Guardar Historial",
+      "cancelButton": "Cancelar"
+    },
+    "table": {
+      "fullName": "Nombre Completo",
+      "dateOfBirth": "Fecha de Nacimiento",
+      "allergies": "Alergias",
+      "medications": "Medicamentos",
+      "analysesCount": "Análisis",
+      "actions": "Acciones"
+    }
+  }
+}

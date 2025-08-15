@@ -21,7 +21,7 @@ export type MedicalAnalysis = {
 
 export async function getMedicalAnalysis(
   symptoms: string,
-  language: 'en' | 'fr',
+  language: 'en' | 'fr' | 'es' | 'de',
   imageDataUri?: string | null
 ): Promise<{ data?: MedicalAnalysis; error?: string }> {
   try {
