@@ -100,9 +100,9 @@
       "allergies": "Allergien",
       "medications": "Medikamente",
       "analysesCount": "Analysen",
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "editAction": "Patient bearbeiten",
+      "deleteAction": "Patient löschen"
     }
   }
 }
-
-    

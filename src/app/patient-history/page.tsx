@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/context/language-context';
 import { PlusCircle, Edit, Trash2, Stethoscope, LifeBuoy, Search } from 'lucide-react';
@@ -253,6 +254,7 @@ function PatientHistoryContent() {
             </div>
         </CardHeader>
         <CardContent>
+          <TooltipProvider>
             <div className="border rounded-lg">
                 <Table>
                     <TableHeader>
@@ -274,12 +276,26 @@ function PatientHistoryContent() {
                                     <TableCell>{patient.dateOfBirth || '-'}</TableCell>
                                     <TableCell>{patient.analyses?.length || 0}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" onClick={() => router.push(`/patient-history?action=edit&id=${patient.id}`)}>
-                                            <Edit className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(patient.id!)}>
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button variant="ghost" size="icon" onClick={() => router.push(`/patient-history?action=edit&id=${patient.id}`)}>
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{t('patientHistory.table.editAction')}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(patient.id!)}>
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>{t('patientHistory.table.deleteAction')}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
                                     </TableCell>
                                 </TableRow>
                                 {patient.analyses && patient.analyses.length > 0 && (
@@ -327,6 +343,7 @@ function PatientHistoryContent() {
                     </TableBody>
                 </Table>
             </div>
+          </TooltipProvider>
         </CardContent>
     </Card>
   );
@@ -345,7 +362,3 @@ export default function PatientHistoryPage() {
         </div>
     );
 }
-
-    
-
-    
