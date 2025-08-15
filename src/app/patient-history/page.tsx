@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/context/language-context';
-import { PlusCircle, Edit, Trash2, Stethoscope, LifeBuoy } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Stethoscope, LifeBuoy, Search } from 'lucide-react';
 import type { MedicalAnalysis } from '@/app/actions';
 
 const analysisSchema = z.object({
@@ -48,6 +48,7 @@ function PatientHistoryContent() {
 
   const [isMounted, setIsMounted] = useState(false);
   const [patients, setPatients] = useState<PatientData[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const action = useMemo(() => searchParams.get('action'), [searchParams]);
   const patientId = useMemo(() => searchParams.get('id'), [searchParams]);
@@ -144,6 +145,11 @@ function PatientHistoryContent() {
     }
   };
 
+  const filteredPatients = patients.filter(patient =>
+    patient.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+
   if (!isMounted) {
     return null; // or a loading spinner
   }
@@ -216,7 +222,7 @@ function PatientHistoryContent() {
   return (
     <Card className="max-w-6xl mx-auto">
         <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
                 <div>
                     <CardTitle className="font-headline text-3xl">{t('patientHistory.title')}</CardTitle>
                     <CardDescription>{t('patientHistory.listDescription')}</CardDescription>
@@ -224,6 +230,16 @@ function PatientHistoryContent() {
                 <Button onClick={() => router.push('/patient-history?action=add')}>
                     <PlusCircle className="mr-2 h-4 w-4" /> {t('patientHistory.addPatientButton')}
                 </Button>
+            </div>
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                    type="text"
+                    placeholder={t('patientHistory.searchPlaceholder')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10"
+                />
             </div>
         </CardHeader>
         <CardContent>
@@ -240,8 +256,8 @@ function PatientHistoryContent() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {patients.length > 0 ? (
-                            patients.map((patient) => (
+                        {filteredPatients.length > 0 ? (
+                            filteredPatients.map((patient) => (
                               <React.Fragment key={patient.id}>
                                 <TableRow>
                                     <TableCell className="font-medium">{patient.fullName}</TableCell>
