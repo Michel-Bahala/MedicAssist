@@ -3,6 +3,7 @@
 
 import type { FC } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { EmergencyButton } from '@/components/app/emergency-button';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -33,6 +34,7 @@ const StethoscopeIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
 
 export function Header() {
   const { setLanguage, t } = useTranslation();
+  const router = useRouter();
 
   return (
     <header className="py-4 px-4 sm:px-6 lg:px-8 bg-card shadow-md">
@@ -46,18 +48,14 @@ export function Header() {
           </Link>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/patient-history?action=add" title={t('header.addPatientHistory')}>
-            <Button variant="ghost" size="icon">
-              <UserPlus className="h-5 w-5" />
-              <span className="sr-only">{t('header.addPatientHistory')}</span>
-            </Button>
-          </Link>
-          <Link href="/patient-history" title={t('header.viewPatientHistory')}>
-            <Button variant="ghost" size="icon">
-              <Database className="h-5 w-5" />
-              <span className="sr-only">{t('header.viewPatientHistory')}</span>
-            </Button>
-          </Link>
+          <Button variant="ghost" size="icon" title={t('header.addPatientHistory')} onClick={() => router.push('/patient-history?action=add')}>
+            <UserPlus className="h-5 w-5" />
+            <span className="sr-only">{t('header.addPatientHistory')}</span>
+          </Button>
+          <Button variant="ghost" size="icon" title={t('header.viewPatientHistory')} onClick={() => router.push('/patient-history')}>
+            <Database className="h-5 w-5" />
+            <span className="sr-only">{t('header.viewPatientHistory')}</span>
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
