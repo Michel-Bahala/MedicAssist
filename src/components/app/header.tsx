@@ -1,5 +1,12 @@
+
+"use client";
+
 import type { FC } from 'react';
+import { useState } from 'react';
 import { EmergencyButton } from '@/components/app/emergency-button';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Languages } from 'lucide-react';
 
 const StethoscopeIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
@@ -24,6 +31,8 @@ const StethoscopeIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export function Header() {
+  const [language, setLanguage] = useState('en');
+
   return (
     <header className="py-4 px-4 sm:px-6 lg:px-8 bg-card shadow-md">
       <div className="container mx-auto flex items-center justify-between">
@@ -33,7 +42,25 @@ export function Header() {
             MedicAssist
           </h1>
         </div>
-        <EmergencyButton />
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Languages className="h-5 w-5" />
+                <span className="sr-only">Choose language</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => setLanguage('en')}>
+                English
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setLanguage('fr')}>
+                Français
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <EmergencyButton />
+        </div>
       </div>
     </header>
   );
