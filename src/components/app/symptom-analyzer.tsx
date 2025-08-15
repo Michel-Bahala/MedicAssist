@@ -2,7 +2,7 @@
 // @/components/app/symptom-analyzer.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,20 +17,28 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnalysisResults } from '@/components/app/analysis-results';
 import { FirstAidAdvice } from '@/components/app/first-aid-advice';
-import { Sparkles, Image as ImageIcon, X } from 'lucide-react';
+import { Sparkles, Image as ImageIcon, X, User } from 'lucide-react';
 import { Input } from '../ui/input';
 import Image from 'next/image';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
   symptoms: z.string().min(10, { message: 'Please describe your symptoms in at least 10 characters.' }),
   image: z.any().optional(),
+  patientId: z.string().optional(),
 });
 
+type Patient = {
+  id: string;
+  fullName: string;
+  analyses?: any[];
+}
 
 export function SymptomAnalyzer() {
   const [analysisResult, setAnalysisResult] = useState<MedicalAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const { toast } = useToast();
   const { t, language } = useTranslation();
 
@@ -38,8 +46,21 @@ export function SymptomAnalyzer() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       symptoms: "",
+      patientId: "",
     },
   });
+
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('patientHistory');
+      if (savedData) {
+        setPatients(JSON.parse(savedData));
+      }
+    } catch (error) {
+      console.error("Failed to parse patient history from localStorage", error);
+      setPatients([]);
+    }
+  }, []);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -59,6 +80,27 @@ export function SymptomAnalyzer() {
     const fileInput = document.getElementById('image-upload') as HTMLInputElement;
     if(fileInput) fileInput.value = '';
   }
+  
+  const saveAnalysisToPatient = (patientId: string, symptoms: string, analysisData: MedicalAnalysis) => {
+    const updatedPatients = patients.map(p => {
+        if (p.id === patientId) {
+            const newAnalysis = {
+                analysisDate: new Date().toISOString(),
+                symptoms: symptoms,
+                analysis: analysisData.analysis,
+                advice: analysisData.advice,
+            };
+            // Ensure analyses array exists
+            const existingAnalyses = p.analyses || [];
+            return { ...p, analyses: [...existingAnalyses, newAnalysis] };
+        }
+        return p;
+    });
+
+    localStorage.setItem('patientHistory', JSON.stringify(updatedPatients));
+    setPatients(updatedPatients);
+  };
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -74,6 +116,13 @@ export function SymptomAnalyzer() {
       });
     } else if (result.data) {
       setAnalysisResult(result.data);
+      if (values.patientId) {
+        saveAnalysisToPatient(values.patientId, values.symptoms, result.data);
+        toast({
+          title: t('symptomAnalyzer.saveSuccessTitle'),
+          description: t('symptomAnalyzer.saveSuccessDescription'),
+        });
+      }
     }
     
     setIsLoading(false);
@@ -92,6 +141,36 @@ export function SymptomAnalyzer() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+               {patients.length > 0 && (
+                <FormField
+                  control={form.control}
+                  name="patientId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2 font-medium">
+                        <User className="h-5 w-5" />
+                        {t('symptomAnalyzer.selectPatient')}
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('symptomAnalyzer.selectPatientPlaceholder')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {patients.map((patient) => (
+                            <SelectItem key={patient.id} value={patient.id}>
+                              {patient.fullName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               <FormField
                 control={form.control}
                 name="symptoms"
@@ -191,3 +270,5 @@ function LoadingSkeleton() {
         </div>
     )
 }
+
+    

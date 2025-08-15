@@ -31,7 +31,11 @@
     "analyzeButton": "Analyser les symptômes",
     "analyzing": "Analyse en cours...",
     "analysisFailed": "L'analyse a échoué",
-    "uploadImage": "Télécharger une image médicale (facultatif)"
+    "uploadImage": "Télécharger une image médicale (facultatif)",
+    "selectPatient": "Effectuer une analyse pour un patient existant (facultatif)",
+    "selectPatientPlaceholder": "Sélectionnez un patient pour enregistrer les résultats",
+    "saveSuccessTitle": "Analyse enregistrée",
+    "saveSuccessDescription": "Les résultats de l'analyse ont été enregistrés dans l'historique du patient."
   },
   "analysisResults": {
     "summaryTitle": "Résumé de l'analyse",
@@ -71,6 +75,11 @@
     "deleteSuccessTitle": "Dossier supprimé",
     "saveSuccessTitle": "Antécédents enregistrés",
     "saveSuccessDescription": "Les antécédents médicaux du patient ont été mis à jour avec succès.",
+    "analysisHistory": {
+      "title": "Voir l'historique des analyses",
+      "date": "Date de l'analyse",
+      "symptoms": "Symptômes rapportés"
+    },
     "form": {
       "fullName": "Nom complet",
       "fullNamePlaceholder": "ex: Jeanne Dupont",
@@ -91,7 +100,10 @@
       "dateOfBirth": "Date de naissance",
       "allergies": "Allergies",
       "medications": "Médicaments",
+      "analysesCount": "Analyses",
       "actions": "Actions"
     }
   }
 }
+
+    

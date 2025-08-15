@@ -31,7 +31,11 @@
     "analyzeButton": "Analyze Symptoms",
     "analyzing": "Analyzing...",
     "analysisFailed": "Analysis Failed",
-    "uploadImage": "Upload Medical Image (Optional)"
+    "uploadImage": "Upload Medical Image (Optional)",
+    "selectPatient": "Perform analysis for an existing patient (Optional)",
+    "selectPatientPlaceholder": "Select a patient to save analysis results",
+    "saveSuccessTitle": "Analysis Saved",
+    "saveSuccessDescription": "The analysis results have been saved to the patient's history."
   },
   "analysisResults": {
     "summaryTitle": "Analysis Summary",
@@ -71,6 +75,11 @@
     "deleteSuccessTitle": "Record Deleted",
     "saveSuccessTitle": "History Saved",
     "saveSuccessDescription": "The patient medical history has been successfully updated.",
+    "analysisHistory": {
+      "title": "View Analysis History",
+      "date": "Analysis Date",
+      "symptoms": "Reported Symptoms"
+    },
     "form": {
       "fullName": "Full Name",
       "fullNamePlaceholder": "e.g., Jane Doe",
@@ -91,7 +100,10 @@
       "dateOfBirth": "Date of Birth",
       "allergies": "Allergies",
       "medications": "Medications",
+      "analysesCount": "Analyses",
       "actions": "Actions"
     }
   }
 }
+
+    

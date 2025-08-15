@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -13,9 +13,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/context/language-context';
-import { PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Stethoscope, LifeBuoy } from 'lucide-react';
+import type { MedicalAnalysis } from '@/app/actions';
+
+const analysisSchema = z.object({
+  analysisDate: z.string(),
+  symptoms: z.string(),
+  analysis: z.any(),
+  advice: z.any(),
+});
 
 const patientSchema = z.object({
   id: z.string().optional(),
@@ -25,9 +34,11 @@ const patientSchema = z.object({
   medications: z.string().optional(),
   chronicConditions: z.string().optional(),
   previousSurgeries: z.string().optional(),
+  analyses: z.array(analysisSchema).optional(),
 });
 
 type PatientData = z.infer<typeof patientSchema>;
+type AnalysisRecord = z.infer<typeof analysisSchema>;
 
 function PatientHistoryContent() {
   const router = useRouter();
@@ -49,6 +60,7 @@ function PatientHistoryContent() {
       medications: '',
       chronicConditions: '',
       previousSurgeries: '',
+      analyses: [],
     },
   });
 
@@ -58,7 +70,6 @@ function PatientHistoryContent() {
       const savedData = localStorage.getItem('patientHistory');
       if (savedData) {
         const parsedData = JSON.parse(savedData);
-        // Ensure the parsed data is an array
         if (Array.isArray(parsedData)) {
           setPatients(parsedData);
         } else {
@@ -73,9 +84,10 @@ function PatientHistoryContent() {
     }
   }, []);
 
+  const action = useMemo(() => searchParams.get('action'), [searchParams]);
+  const patientId = useMemo(() => searchParams.get('id'), [searchParams]);
+
   useEffect(() => {
-    const action = searchParams.get('action');
-    const id = searchParams.get('id');
     if (action === 'add') {
       setEditingPatient({});
       form.reset({
@@ -86,9 +98,10 @@ function PatientHistoryContent() {
         medications: '',
         chronicConditions: '',
         previousSurgeries: '',
+        analyses: [],
       });
-    } else if (action === 'edit' && id) {
-        const patientToEdit = patients.find(p => p.id === id);
+    } else if (action === 'edit' && patientId) {
+        const patientToEdit = patients.find(p => p.id === patientId);
         if (patientToEdit) {
             setEditingPatient(patientToEdit);
             form.reset(patientToEdit);
@@ -96,7 +109,7 @@ function PatientHistoryContent() {
     } else {
         setEditingPatient(null);
     }
-  }, [searchParams, patients, form]);
+  }, [action, patientId, patients, form]);
   
 
   const savePatientsToLocalStorage = (updatedPatients: PatientData[]) => {
@@ -107,11 +120,9 @@ function PatientHistoryContent() {
   const onSubmit = (data: PatientData) => {
     let updatedPatients;
     if (editingPatient?.id) {
-        // Update existing patient
-        updatedPatients = patients.map(p => (p.id === editingPatient.id ? { ...data, id: p.id } : p));
+        updatedPatients = patients.map(p => (p.id === editingPatient.id ? { ...data, id: p.id, analyses: p.analyses || [] } : p));
     } else {
-        // Add new patient
-        const newPatient = { ...data, id: new Date().toISOString() };
+        const newPatient = { ...data, id: new Date().toISOString(), analyses: [] };
         updatedPatients = [...patients, newPatient];
     }
     
@@ -137,7 +148,7 @@ function PatientHistoryContent() {
   };
 
   if (!isMounted) {
-    return null; // or a loading spinner
+    return null;
   }
 
   if (editingPatient) {
@@ -227,17 +238,20 @@ function PatientHistoryContent() {
                             <TableHead>{t('patientHistory.table.dateOfBirth')}</TableHead>
                             <TableHead>{t('patientHistory.table.allergies')}</TableHead>
                             <TableHead>{t('patientHistory.table.medications')}</TableHead>
+                             <TableHead>{t('patientHistory.table.analysesCount')}</TableHead>
                             <TableHead className="text-right">{t('patientHistory.table.actions')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {patients.length > 0 ? (
                             patients.map((patient) => (
-                                <TableRow key={patient.id}>
+                              <React.Fragment key={patient.id}>
+                                <TableRow>
                                     <TableCell className="font-medium">{patient.fullName}</TableCell>
                                     <TableCell>{patient.dateOfBirth}</TableCell>
                                     <TableCell>{patient.allergies || '-'}</TableCell>
                                     <TableCell>{patient.medications || '-'}</TableCell>
+                                    <TableCell>{patient.analyses?.length || 0}</TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="ghost" size="icon" onClick={() => router.push(`/patient-history?action=edit&id=${patient.id}`)}>
                                             <Edit className="h-4 w-4" />
@@ -247,10 +261,46 @@ function PatientHistoryContent() {
                                         </Button>
                                     </TableCell>
                                 </TableRow>
+                                {patient.analyses && patient.analyses.length > 0 && (
+                                  <TableRow>
+                                      <TableCell colSpan={6}>
+                                          <Accordion type="single" collapsible className="w-full">
+                                              <AccordionItem value="item-1">
+                                                  <AccordionTrigger>{t('patientHistory.analysisHistory.title')}</AccordionTrigger>
+                                                  <AccordionContent>
+                                                      <div className="space-y-4 p-4">
+                                                          {patient.analyses.map((record: AnalysisRecord, index) => (
+                                                              <Card key={index} className="bg-muted/50">
+                                                                  <CardHeader>
+                                                                      <CardTitle className="text-lg">{t('patientHistory.analysisHistory.date')}: {new Date(record.analysisDate).toLocaleString()}</CardTitle>
+                                                                      <CardDescription>{t('patientHistory.analysisHistory.symptoms')}: {record.symptoms}</CardDescription>
+                                                                  </CardHeader>
+                                                                  <CardContent className="space-y-4">
+                                                                      <div>
+                                                                          <h4 className="font-bold flex items-center gap-2 mb-2"><Stethoscope className="h-5 w-5 text-primary" /> {t('analysisResults.summaryTitle')}</h4>
+                                                                          <p className="text-sm">{record.analysis.summary}</p>
+                                                                      </div>
+                                                                      <div>
+                                                                          <h4 className="font-bold flex items-center gap-2 mb-2"><LifeBuoy className="h-5 w-5 text-primary" /> {t('firstAid.title')}</h4>
+                                                                           <ul className="space-y-2 list-decimal list-outside ml-5 text-sm">
+                                                                            {record.advice.advice.split('\n').map((item: string, i: number) => item.trim().length > 0 && <li key={i} className="pl-2">{item.replace(/^\d+\.\s*/, '')}</li>)}
+                                                                          </ul>
+                                                                      </div>
+                                                                  </CardContent>
+                                                              </Card>
+                                                          ))}
+                                                      </div>
+                                                  </AccordionContent>
+                                              </AccordionItem>
+                                          </Accordion>
+                                      </TableCell>
+                                  </TableRow>
+                                )}
+                              </React.Fragment>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center h-24">{t('patientHistory.noRecords')}</TableCell>
+                                <TableCell colSpan={6} className="text-center h-24">{t('patientHistory.noRecords')}</TableCell>
                             </TableRow>
                         )}
                     </TableBody>
@@ -274,3 +324,5 @@ export default function PatientHistoryPage() {
         </div>
     );
 }
+
+    
