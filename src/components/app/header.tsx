@@ -5,8 +5,8 @@ import type { FC } from 'react';
 import Link from 'next/link';
 import { EmergencyButton } from '@/components/app/emergency-button';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Languages, User } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Languages, UserPlus, Database } from 'lucide-react';
 import { useTranslation } from '@/context/language-context';
 
 const StethoscopeIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
@@ -46,10 +46,16 @@ export function Header() {
           </Link>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/patient-history">
+          <Link href="/patient-history" title={t('header.addPatientHistory')}>
             <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-              <span className="sr-only">{t('header.patientHistory')}</span>
+              <UserPlus className="h-5 w-5" />
+              <span className="sr-only">{t('header.addPatientHistory')}</span>
+            </Button>
+          </Link>
+          <Link href="/patient-history" title={t('header.viewPatientHistory')}>
+            <Button variant="ghost" size="icon">
+              <Database className="h-5 w-5" />
+              <span className="sr-only">{t('header.viewPatientHistory')}</span>
             </Button>
           </Link>
           <DropdownMenu>

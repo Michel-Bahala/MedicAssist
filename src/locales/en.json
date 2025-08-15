@@ -3,7 +3,8 @@
   "header": {
     "title": "MedicAssist",
     "chooseLanguage": "Choose language",
-    "patientHistory": "Patient History"
+    "addPatientHistory": "Add/Edit Patient History",
+    "viewPatientHistory": "View Patient History"
   },
   "languages": {
     "en": "English",

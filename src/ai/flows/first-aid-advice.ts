@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -16,6 +17,7 @@ const FirstAidAdviceInputSchema = z.object({
     .string()
     .describe('A detailed description of the symptoms experienced by the user.'),
   suggestedConditions: z.string().describe('List of suggested conditions based on symptoms.'),
+  language: z.enum(['en', 'fr']).describe('The language for the output.'),
 });
 export type FirstAidAdviceInput = z.infer<typeof FirstAidAdviceInputSchema>;
 
@@ -37,6 +39,8 @@ const prompt = ai.definePrompt({
   prompt: `You are a trained medical professional providing first aid advice.
 
   Based on the following symptoms and suggested conditions, provide immediate, actionable first aid advice. Be clear, concise, and focus on what the user can do before seeking professional medical help. Format advice as a numbered list.
+
+  ALL RESPONSES MUST BE IN THIS LANGUAGE: {{{language}}}.
 
 Symptoms: {{{symptoms}}}
 Suggested Conditions: {{{suggestedConditions}}}`,

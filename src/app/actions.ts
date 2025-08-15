@@ -1,12 +1,15 @@
+
 'use server';
 
 import {
   analyzeSymptoms,
   AnalyzeSymptomsOutput,
+  AnalyzeSymptomsInput,
 } from '@/ai/flows/analyze-symptoms';
 import {
   getFirstAidAdvice,
   FirstAidAdviceOutput,
+  FirstAidAdviceInput,
 } from '@/ai/flows/first-aid-advice';
 import { generateAudio, GenerateAudioInput } from '@/ai/flows/text-to-speech';
 
@@ -18,10 +21,16 @@ export type MedicalAnalysis = {
 
 export async function getMedicalAnalysis(
   symptoms: string,
+  language: 'en' | 'fr',
   imageDataUri?: string | null
 ): Promise<{ data?: MedicalAnalysis; error?: string }> {
   try {
-    const analysis = await analyzeSymptoms({ symptoms, photoDataUri: imageDataUri });
+    const analysisInput: AnalyzeSymptomsInput = { 
+      symptoms, 
+      photoDataUri: imageDataUri,
+      language,
+    };
+    const analysis = await analyzeSymptoms(analysisInput);
     if (
       !analysis ||
       !analysis.possibleConditions ||
@@ -37,7 +46,12 @@ export async function getMedicalAnalysis(
       .map((c) => c.condition)
       .join(', ');
       
-    const advice = await getFirstAidAdvice({ symptoms: symptoms, suggestedConditions });
+    const adviceInput: FirstAidAdviceInput = { 
+      symptoms: symptoms, 
+      suggestedConditions,
+      language,
+    };
+    const advice = await getFirstAidAdvice(adviceInput);
 
     return { data: { analysis, advice } };
   } catch (e) {

@@ -3,7 +3,8 @@
   "header": {
     "title": "MedicAssist",
     "chooseLanguage": "Choisir la langue",
-    "patientHistory": "Antécédents du patient"
+    "addPatientHistory": "Ajouter/Modifier les antécédents du patient",
+    "viewPatientHistory": "Voir les antécédents du patient"
   },
   "languages": {
     "en": "English",

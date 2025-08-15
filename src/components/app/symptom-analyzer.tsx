@@ -1,3 +1,4 @@
+
 // @/components/app/symptom-analyzer.tsx
 "use client";
 
@@ -31,7 +32,7 @@ export function SymptomAnalyzer() {
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,7 +64,7 @@ export function SymptomAnalyzer() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    const result = await getMedicalAnalysis(values.symptoms, values.image);
+    const result = await getMedicalAnalysis(values.symptoms, language, values.image);
 
     if (result.error) {
       toast({
