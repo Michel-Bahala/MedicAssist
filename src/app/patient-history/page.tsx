@@ -85,27 +85,31 @@ function PatientHistoryContent() {
   }, []);
   
   useEffect(() => {
-    if (action === 'add') {
-      form.reset({
-        id: '',
-        fullName: '',
-        dateOfBirth: '',
-        allergies: '',
-        medications: '',
-        chronicConditions: '',
-        previousSurgeries: '',
-        analyses: [],
-      });
-    } else if (action === 'edit' && patientId) {
-        const patientToEdit = patients.find(p => p.id === patientId);
-        if (patientToEdit) {
-            form.reset(patientToEdit);
-        } else {
-            // If patient not found, redirect to the list view
-            router.push('/patient-history');
-        }
+    // This effect now correctly handles resetting the form or loading patient data
+    // based on the URL parameters.
+    if (showForm) {
+      if (action === 'add') {
+        form.reset({
+          id: '',
+          fullName: '',
+          dateOfBirth: '',
+          allergies: '',
+          medications: '',
+          chronicConditions: '',
+          previousSurgeries: '',
+          analyses: [],
+        });
+      } else if (action === 'edit' && patientId) {
+          const patientToEdit = patients.find(p => p.id === patientId);
+          if (patientToEdit) {
+              form.reset(patientToEdit);
+          } else {
+              // If patient not found, go back to the list view.
+              router.push('/patient-history');
+          }
+      }
     }
-  }, [action, patientId, patients, form, router]);
+  }, [action, patientId, patients, form, router, showForm]);
   
 
   const savePatientsToLocalStorage = (updatedPatients: PatientData[]) => {
