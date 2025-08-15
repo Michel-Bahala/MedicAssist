@@ -29,7 +29,7 @@ const analysisSchema = z.object({
 const patientSchema = z.object({
   id: z.string().optional(),
   fullName: z.string().min(1, { message: 'Full name is required.' }),
-  dateOfBirth: z.string().min(1, { message: 'Date of birth is required.' }),
+  dateOfBirth: z.string().optional(),
   allergies: z.string().optional(),
   medications: z.string().optional(),
   chronicConditions: z.string().optional(),
@@ -261,7 +261,7 @@ function PatientHistoryContent() {
                               <React.Fragment key={patient.id}>
                                 <TableRow>
                                     <TableCell className="font-medium">{patient.fullName}</TableCell>
-                                    <TableCell>{patient.dateOfBirth}</TableCell>
+                                    <TableCell>{patient.dateOfBirth || '-'}</TableCell>
                                     <TableCell>{patient.allergies || '-'}</TableCell>
                                     <TableCell>{patient.medications || '-'}</TableCell>
                                     <TableCell>{patient.analyses?.length || 0}</TableCell>

@@ -38,11 +38,14 @@ export function SymptomAnalyzer() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isListening, setIsListening] = useState(false);
+  const [suggestions, setSuggestions] = useState<Patient[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   
   const { toast } = useToast();
   const { t, language } = useTranslation();
   
   const recognitionRef = useRef<any>(null);
+  const patientInputRef = useRef<HTMLDivElement>(null);
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -95,6 +98,16 @@ export function SymptomAnalyzer() {
       console.error("Failed to parse patient history from localStorage", error);
       setPatients([]);
     }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (patientInputRef.current && !patientInputRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleListen = () => {
@@ -135,7 +148,6 @@ export function SymptomAnalyzer() {
                 analysis: analysisData.analysis,
                 advice: analysisData.advice,
             };
-            // Ensure analyses array exists
             const existingAnalyses = p.analyses || [];
             return { ...p, analyses: [...existingAnalyses, newAnalysis] };
         }
@@ -144,6 +156,23 @@ export function SymptomAnalyzer() {
 
     localStorage.setItem('patientHistory', JSON.stringify(updatedPatients));
     setPatients(updatedPatients);
+  };
+
+  const addNewPatientAndSaveAnalysis = (fullName: string, symptoms: string, analysisData: MedicalAnalysis) => {
+    const newPatient: Patient = {
+        id: new Date().toISOString(),
+        fullName: fullName,
+        analyses: [{
+            analysisDate: new Date().toISOString(),
+            symptoms: symptoms,
+            analysis: analysisData.analysis,
+            advice: analysisData.advice,
+        }]
+    };
+    const updatedPatients = [...patients, newPatient];
+    localStorage.setItem('patientHistory', JSON.stringify(updatedPatients));
+    setPatients(updatedPatients);
+    return newPatient.id;
   };
 
 
@@ -163,12 +192,20 @@ export function SymptomAnalyzer() {
       setAnalysisResult(result.data);
 
       if (values.patientName) {
-        const patientToUpdate = patients.find(p => p.fullName.toLowerCase() === values.patientName?.toLowerCase());
+        let patientToUpdate = patients.find(p => p.fullName.toLowerCase() === values.patientName?.toLowerCase());
+        
         if (patientToUpdate) {
             saveAnalysisToPatient(patientToUpdate.id, values.symptoms, result.data);
             toast({
               title: t('symptomAnalyzer.saveSuccessTitle'),
               description: t('symptomAnalyzer.saveSuccessDescription'),
+            });
+        } else {
+            // Patient does not exist, create a new one
+            const newPatientId = addNewPatientAndSaveAnalysis(values.patientName, values.symptoms, result.data);
+            toast({
+              title: "Patient créé et analyse enregistrée",
+              description: `Le nouveau patient "${values.patientName}" a été créé et l'analyse a été sauvegardée.`,
             });
         }
       }
@@ -176,6 +213,24 @@ export function SymptomAnalyzer() {
     
     setIsLoading(false);
   }
+
+  const handlePatientNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    form.setValue('patientName', value);
+    if (value.length > 0) {
+      const filtered = patients.filter(p => p.fullName.toLowerCase().includes(value.toLowerCase()));
+      setSuggestions(filtered);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+  
+  const handleSuggestionClick = (patient: Patient) => {
+    form.setValue('patientName', patient.fullName);
+    setShowSuggestions(false);
+  };
+
 
   return (
     <div className="w-full space-y-8">
@@ -190,24 +245,45 @@ export function SymptomAnalyzer() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-               {patients.length > 0 && (
-                <FormField
+               <FormField
                   control={form.control}
                   name="patientName"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem ref={patientInputRef}>
                       <FormLabel className="flex items-center gap-2 font-medium">
                         <User className="h-5 w-5" />
                         {t('symptomAnalyzer.selectPatient')}
                       </FormLabel>
                        <FormControl>
-                          <Input placeholder={t('patientHistory.form.fullNamePlaceholder')} {...field} />
+                          <div className="relative">
+                            <Input 
+                              placeholder={t('patientHistory.form.fullNamePlaceholder')}
+                              {...field}
+                              onChange={handlePatientNameChange}
+                              onFocus={() => { if(field.value) setShowSuggestions(true); }}
+                              autoComplete="off"
+                            />
+                            {showSuggestions && suggestions.length > 0 && (
+                              <Card className="absolute z-10 w-full mt-1 bg-card border border-border">
+                                <ul className="py-1">
+                                  {suggestions.map((patient) => (
+                                    <li 
+                                      key={patient.id} 
+                                      className="px-3 py-2 cursor-pointer hover:bg-accent"
+                                      onClick={() => handleSuggestionClick(patient)}
+                                    >
+                                      {patient.fullName}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </Card>
+                            )}
+                          </div>
                        </FormControl>
                        <FormMessage />
                     </FormItem>
                   )}
                 />
-              )}
 
               <FormField
                 control={form.control}
