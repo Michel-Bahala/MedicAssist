@@ -73,6 +73,8 @@ function PatientHistoryContent() {
   });
 
   useEffect(() => {
+    // This effect runs only on the client, after the component has mounted.
+    // This is the correct place to access localStorage.
     setIsMounted(true);
     try {
       const savedData = localStorage.getItem('patientHistory');
@@ -85,24 +87,17 @@ function PatientHistoryContent() {
     } catch (error) {
       console.error("Failed to parse patient history from localStorage", error);
       setPatients([]);
+      toast({
+        variant: "destructive",
+        title: "Error loading data",
+        description: "Could not load patient history from your device.",
+      });
     }
-  }, []);
+  }, [toast]);
   
   useEffect(() => {
-    if (showForm) {
-      if (action === 'add') {
-        form.reset({
-          id: '',
-          fullName: '',
-          email: '',
-          dateOfBirth: '',
-          allergies: '',
-          medications: '',
-          chronicConditions: '',
-          previousSurgeries: '',
-          analyses: [],
-        });
-      } else if (action === 'edit' && patientId) {
+    if (showForm && patients.length > 0) {
+      if (action === 'edit' && patientId) {
           const patientToEdit = patients.find(p => p.id === patientId);
           if (patientToEdit) {
               form.reset(patientToEdit);
@@ -110,13 +105,34 @@ function PatientHistoryContent() {
               router.push('/patient-history');
           }
       }
+    } else if (action === 'add') {
+      form.reset({
+        id: '',
+        fullName: '',
+        email: '',
+        dateOfBirth: '',
+        allergies: '',
+        medications: '',
+        chronicConditions: '',
+        previousSurgeries: '',
+        analyses: [],
+      });
     }
   }, [action, patientId, patients, form, router, showForm]);
   
 
   const savePatientsToLocalStorage = (updatedPatients: PatientData[]) => {
-    localStorage.setItem('patientHistory', JSON.stringify(updatedPatients));
-    setPatients(updatedPatients);
+    try {
+      localStorage.setItem('patientHistory', JSON.stringify(updatedPatients));
+      setPatients(updatedPatients);
+    } catch (error) {
+       console.error("Failed to save patient history to localStorage", error);
+       toast({
+        variant: "destructive",
+        title: "Error saving data",
+        description: "Could not save patient history to your device.",
+      });
+    }
   };
 
   const onSubmit = (data: PatientData) => {
@@ -155,7 +171,12 @@ function PatientHistoryContent() {
 
 
   if (!isMounted) {
-    return null; // or a loading spinner
+    // Show a loading state until the component is mounted and data is loaded
+    return (
+      <div className="flex justify-center items-center p-8">
+        <p>Loading Patient History...</p>
+      </div>
+    );
   }
 
   if (showForm) {
